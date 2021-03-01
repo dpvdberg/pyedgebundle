@@ -1,0 +1,63 @@
+@startuml
+
+package xnetwork {
+    class "Graph" as xgraph {
+        nodes
+        edges
+        ...
+    }
+}
+
+package "pyedgebundling" as ppeb {
+    class "pyedgebundling" as peb {
+        --
+        +antBundle(networkx::Graph) : BundledGraph
+        +forceBundle(networkx::Graph) : BundledGraph
+        +plotBundledGraph(BundledGraph)
+    }
+
+    class "BundledGraph" as bg {
+        edges : CurvedEdge[]
+    }
+
+    interface "BundleAlgorithm" as ba {
+        --
+        +{abstract} bundle(networkx::Graph) : BundledGraph
+    }
+
+    class "AntBundleAlgorithm" as aba {
+        phermoneField : PhermoneField
+        --
+        +bundle(networkx::Graph) : BundledGraph
+    }
+
+    class "ForceBundleAlgorithm" as fba {
+        --
+        +bundle(networkx::Graph) : BundledGraph
+    }
+
+    class "PhermoneField" as pf {
+        field : float[][]
+        --
+        +buildField()
+        -step()
+        -antWalk()
+    }
+}
+
+peb --> aba
+peb --> fba
+
+aba --|> ba
+fba --|> ba
+
+aba --> pf
+
+peb --> bg
+ba --> bg
+
+peb ---> xgraph
+bg ---|> xgraph
+
+
+@enduml
