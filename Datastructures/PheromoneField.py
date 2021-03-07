@@ -1,10 +1,10 @@
 class PheromoneField:
 
-    def __init(self, nodes):
-        self.field = float[nodes][nodes]
+    def __init__(self, nodes):
+        self.field = [[0 for col in range(nodes)] for row in range(nodes)]
 
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
-    def buildField(self):
+    def buildField(self, r):
         pass
 
     # Let all ants in the network take a single step to their goal
@@ -14,3 +14,6 @@ class PheromoneField:
     # Calculate the new direction for an individual ant
     def antWalk(self):
         pass
+
+    def getField(self):
+        return self.field
