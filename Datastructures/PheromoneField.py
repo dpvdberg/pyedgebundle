@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy
 from networkx import DiGraph
 
 from Datastructures.Ant import Ant
@@ -7,13 +8,15 @@ from Datastructures.Ant import Ant
 
 class PheromoneField:
 
-    def __init__(self, pixels, graph: DiGraph):
-        self.field = [[0 for col in range(pixels)] for row in range(pixels)]
+    def __init__(self, pixels, graph: DiGraph, decreaseByConstant, decreaseValue):
+        self.field = numpy.zeros(pixels)
         for node in graph.nodes:
             # TODO: set pixel to pheromone value
             pass
 
         self.g = graph
+        self.decreaseByConstant = decreaseByConstant
+        self.decreaseValue = decreaseValue
 
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r):
@@ -43,4 +46,7 @@ class PheromoneField:
 
     # Evaporate field values after a run
     def evaporate(self):
-        pass
+        if (self.decreaseByConstant):
+            self.field - self.decreaseValue
+        else:
+            self.field * self.decreaseValue
