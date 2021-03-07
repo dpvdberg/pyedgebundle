@@ -5,9 +5,9 @@ from networkx import Graph
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
 class AntBundleAlgorithm(BundleAlgorithm):
 
-    def __init__(self, graph: Graph, runs):
+    def __init__(self, graph: Graph, runs, pixels):
         self.graph = graph
-        self.field = PheromoneField(graph.number_of_nodes())
+        self.field = PheromoneField(pixels, graph)
         self.r = runs
 
     # Bundle edges in the given graph and return a BundledGraph object
