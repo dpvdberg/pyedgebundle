@@ -1,0 +1,2 @@
+class BundledGraph:
+    pass
