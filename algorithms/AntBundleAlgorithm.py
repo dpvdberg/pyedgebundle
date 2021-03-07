@@ -2,6 +2,7 @@ from algorithms.BundleAlgorithm import BundleAlgorithm
 from Datastructures.PheromoneField import PheromoneField
 from networkx import Graph
 
+
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
 class AntBundleAlgorithm(BundleAlgorithm):
 
@@ -13,7 +14,7 @@ class AntBundleAlgorithm(BundleAlgorithm):
     # Bundle edges in the given graph and return a BundledGraph object
     def bundle(self, graph):
         self.field.buildField(self.r)
-        return self.createCurves(self.field.getField())
+        return self.createCurves(self.field)
 
     # Create and return a BundledGraph with curved edges based on the given Pheromone field
     def createCurves(self, field):

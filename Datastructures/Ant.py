@@ -1,10 +1,10 @@
 class Ant:
 
-    def __init__(self, start_x , start_y, goal_x, goal_y):
-        self.location = (start_x, start_y)
-        self.goal = (goal_x, goal_y)
+    def __init__(self, start, goal):
+        self.location = start
+        self.goal = goal
         self.direction = 0
-        self.path = []
+        self.path = [start]
 
     def reachedGoal(self):
         return self.location == self.goal

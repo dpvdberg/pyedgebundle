@@ -15,8 +15,7 @@ class PheromoneField:
 
         self.g = graph
 
-        # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
-
+    # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r):
         for run in r:
             ants = []
@@ -30,9 +29,9 @@ class PheromoneField:
                 self.updateField(ant.path)
             self.evaporate()
 
+    # Return an ant that walks along the given edge
     def initializeEdge(self, edge) -> Ant:
-        # return ant with proper start and goal location
-        pass
+        return Ant((self.g.nodes[edge[0]]['x'], self.g.nodes[edge[0]]['y']), (self.g.nodes[edge[1]]['x'], self.g.nodes[edge[1]]['y']))
 
     # Calculate the new direction for an individual ant
     def antWalk(self, ant) -> Tuple:
@@ -45,6 +44,3 @@ class PheromoneField:
     # Evaporate field values after a run
     def evaporate(self):
         pass
-
-    def getField(self):
-        return self.field
