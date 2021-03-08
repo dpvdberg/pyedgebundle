@@ -120,7 +120,7 @@ class PheromoneField:
 
     # Take random new directional change
     def randomDirectionalChange(self):
-        return np.random.normal(0, np.pi / 6)
+        return np.random.normal(0, math.pi / 6)
 
     # Calculate directional change based on neighbours
     def pheromoneBasedDirection(self, neighbours, ant) -> float:

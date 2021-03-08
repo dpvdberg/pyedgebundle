@@ -32,6 +32,7 @@ class Ant:
         for i in range(-1, 2):
             for j in range(-1, 2):
                 neighbours.append((self.location[0] + i, self.location[1] + j))
+        neighbours.remove(self.location)
 
         # Only use neighbours that have not been visited before
         nvisited = [x for x in neighbours if x not in self.path]
@@ -46,7 +47,7 @@ class Ant:
             return nvisited
 
         # Only consider neighbours that make sharp turns w.r.t. our current position
-        nfinal = [x for x in nvisited if -math.pi / 2 <= math.atan2(math.sin(self.direction - self.calcAngle(x)), math.cos(self.direction - self.calcAngle(x))) <= math.pi / 2]
+        nfinal = [x for x in nborder if -math.pi / 2 <= math.atan2(math.sin(self.direction - self.calcAngle(x)), math.cos(self.direction - self.calcAngle(x))) <= math.pi / 2]
         if not nfinal:
             return nborder
         return nfinal
