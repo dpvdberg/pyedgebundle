@@ -17,10 +17,6 @@ class PheromoneField:
 
     def __init__(self, pixels, graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold, maxUpdateDistance):
         self.field = np.zeros(pixels)
-        for node in graph.nodes:
-            # TODO: set pixel to pheromone value
-            pass
-
         self.g = graph
         self.decreaseByConstant = decreaseByConstant
         self.decreaseValue = decreaseValue
@@ -33,12 +29,15 @@ class PheromoneField:
         for run in r:
             ants = []
             for e in self.g.edges:
+                # For each edge, create an ant and let it walk until it reaches its goal
                 ant = self.initializeEdge(e)
                 ants.append(ant)
                 while not ant.reachedGoal():
                     self.antWalk(ant)
+            # Update the field with the new found paths
             for ant in ants:
                 self.updateField(ant.path)
+            # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
 
     # Return an ant that walks along the given edge
@@ -49,15 +48,19 @@ class PheromoneField:
     # Calculate the new direction for an individual ant
     def antWalk(self, ant: Ant):
         neighbours = ant.getCandidateNeighbours()
+        # If only one neighbour is valid, walk to that pixel
         if len(neighbours) == 1:
             newDirec = neighbours[0]
         else:
+            # With chance p we either get a random directional change, or a pheromone based directional change
             rand = np.random.uniform(0, 1)
             if rand < self.p:
                 newDirec = self.randomDirectionalChange()
             else:
                 newDirec = self.pheromoneBasedDirection(neighbours, ant)
+        # Update the ant's new direction
         ant.updateDirection(newDirec)
+        # Let the ant take a step
         ant.takeStep()
 
     # Update values of field using the given path
@@ -109,6 +112,7 @@ class PheromoneField:
 
     # Evaporate field values after a run
     def evaporate(self):
+        # Depending on whether the user choose a constant value decrease, or multiplying by a factor between (0, 1)
         if (self.decreaseByConstant):
             self.field - self.decreaseValue
         else:
@@ -116,28 +120,42 @@ class PheromoneField:
 
     # Take random new directional change
     def randomDirectionalChange(self):
-        return np.random.normal(0, np.pi/6)
+        return np.random.normal(0, np.pi / 6)
 
     # Calculate directional change based on neighbours
     def pheromoneBasedDirection(self, neighbours, ant) -> float:
+        # Calculate left and right antenna pixels and their values
         l = ant.getLeftAntenna()
         r = ant.getRightAntenna()
+        fLeft = self.field[l]
+        fRight = self.field[r]
+
         if l in neighbours and r in neighbours:
-            fLeft = self.field[l]
-            fRight = self.field[r]
             if fLeft == 0 and fRight == 0:
                 if self.field[ant.location] > 0:
+                    # If both are 'bad' neighbours and we are on a path with a high pheromone value, continue walking
                     return 0
                 else:
-                    return np.random.normal(0, math.pi/6)
+                    # If both are 'bad' neighbours and we are on a 'bad' path, take a random directional change
+                    return np.random.normal(0, math.pi / 6)
+
+            # If both antenna are our neighbours but the difference in their values is too small, random change
             elif math.fabs(fLeft - fRight) < self.t:
-                return np.random.normal(0, math.pi/6)
+                return np.random.normal(0, math.pi / 6)
             else:
-                rand = np.random.uniform(0, fLeft**4 + fRight**4)
-                return (-1 if rand < fLeft**4 else 1) * math.pi/4
+                # Else, both antenna are neighbours but their value difference is large enough
+                rand = np.random.uniform(0, fLeft ** 4 + fRight ** 4)
+                # Go left or right, depending on the pheromone values of l and r
+                return (-1 if rand < fLeft ** 4 else 1) * math.pi / 4
+
+        # If only l is a neighbour, go left
         elif l in neighbours and not r in neighbours:
-            return math.pi/4
+            return math.pi / 4
+
+        # If only r is a neighbour, go right
         elif not l in neighbours and r in neighbours:
-            return -math.pi/4
+            return -math.pi / 4
+
+        # If neither are neighbours, pick a random directional change
         else:
-            return np.random.normal(0, math.pi/6)
+            return np.random.normal(0, math.pi / 6)
