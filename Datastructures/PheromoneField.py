@@ -24,6 +24,8 @@ class PheromoneField:
         self.t = threshold
         self.maxUpdateDistance = maxUpdateDistance
 
+        self.rows, self.columns = self.field.shape
+
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r, p):
         for run in r:
@@ -66,22 +68,29 @@ class PheromoneField:
     # Update values of field using the given path
     def updateField(self, path):
 
-        def visitNeighbors(cell, visited_nodes=None):
+        def visitNeighbors(cell, original_cell=None, visited_nodes=None):
+            if original_cell is None:
+                original_cell = cell
+
             if visited_nodes is None:
                 visited_nodes = {}
 
             cx, cy = cell
 
             # loop over direct neighbors
-            for x in range(cx - 1, cx + 1):
-                for y in range(cx - 1, cx + 1):
+            for x in range(cx - 1, cx + 2):
+                for y in range(cy - 1, cy + 2):
+                    if x < 0 or y < 0 or x >= self.columns or y >= self.rows:
+                        # out of range
+                        continue
+
                     c = (x, y)
                     if c not in visited_nodes:
                         # euclidean distance
-                        d = euclidean(cell, c)
+                        d = euclidean(original_cell, c)
                         if d <= self.maxUpdateDistance:
                             visited_nodes[c] = d
-                            visitNeighbors(c, visited_nodes)
+                            visitNeighbors(c, original_cell, visited_nodes)
 
             return visited_nodes
 
@@ -90,7 +99,7 @@ class PheromoneField:
 
         for cell in path:
             neighbors = visitNeighbors(cell)
-            min_distance_dict = {k: min(i for i in (min_distance_dict.get(k), neighbors.get(k)) if i)
+            min_distance_dict = {k: min(i for i in (min_distance_dict.get(k), neighbors.get(k)) if i is not None)
                                  for k in min_distance_dict.keys() | neighbors}
 
         # update field using dict
