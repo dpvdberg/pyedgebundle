@@ -1,5 +1,5 @@
 from algorithms.BundleAlgorithm import BundleAlgorithm
-from Datastructures.PheromoneField import PheromoneField
+from data.PheromoneField import PheromoneField
 from networkx import Graph
 
 

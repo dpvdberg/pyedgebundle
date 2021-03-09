@@ -5,7 +5,7 @@ import numpy as np
 from networkx import DiGraph
 import random
 
-from Datastructures.Ant import Ant
+from data.Ant import Ant
 
 
 # euclidean distance between two cells

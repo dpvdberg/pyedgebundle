@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import networkx as nx
 
-from Datastructures.PheromoneField import PheromoneField
+from data.PheromoneField import PheromoneField
 
 G = nx.DiGraph()
 G.add_edge(1, 2)
@@ -36,8 +36,7 @@ class TestPheromoneField(TestCase):
         ]
         test.updateField(path)
 
-        self.assertEqual(np.count_nonzero(test.field), 7+ 6*2 + 5*2)
-
+        self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
 
     def test_get_path_length(self):
         self.fail()

@@ -1,4 +1,4 @@
-from Datastructures import BundledGraph
+from data import BundledGraph
 from networkx import Graph
 
 

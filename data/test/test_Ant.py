@@ -1,7 +1,7 @@
 import math
 from unittest import TestCase
 
-from Datastructures.Ant import Ant
+from data.Ant import Ant
 
 
 class TestAnt(TestCase):
