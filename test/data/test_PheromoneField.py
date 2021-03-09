@@ -51,3 +51,12 @@ class TestPheromoneField(TestCase):
 
     def test_pheromone_based_direction(self):
         self.fail()
+
+    def test_plot(self):
+        test = PheromoneField((7, 7), G, True, 0.01, 0.1, 0.1, 2)
+        path = [
+            (x, x) for x in range(7)
+        ]
+        test.updateField(path)
+
+        # test.plot()

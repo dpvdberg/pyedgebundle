@@ -3,6 +3,7 @@ from typing import Tuple
 
 import numpy as np
 from networkx import DiGraph
+from matplotlib import pyplot as plt
 import random
 
 from data.Ant import Ant
@@ -168,3 +169,11 @@ class PheromoneField:
         # If neither are neighbours, pick a random directional change
         else:
             return np.random.normal(0, math.pi / 6)
+
+    def plot(self, cm='viridis'):
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_aspect('equal')
+        plt.imshow(self.field, interpolation='nearest', cmap=plt.cm.get_cmap(cm))
+        plt.colorbar()
+        plt.show()
