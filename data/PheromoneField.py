@@ -28,8 +28,8 @@ class PheromoneField:
         self.rows, self.columns = self.field.shape
 
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
-    def buildField(self, r, p):
-        for run in r:
+    def buildField(self, r):
+        for run in range(r):
             ants = []
             for e in self.g.edges:
                 # For each edge, create an ant and let it walk until it reaches its goal
