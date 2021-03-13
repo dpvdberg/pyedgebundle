@@ -34,6 +34,7 @@ class PheromoneField:
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r):
         for run in range(r):
+            print("run: ", run)
             ants = []
             for e in self.g.edges:
                 # For each edge, create an ant and let it walk until it reaches its goal
@@ -44,6 +45,7 @@ class PheromoneField:
             # Update the field with the new found paths
             for ant in ants:
                 self.updateField(ant.path)
+                # self.plot()
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
 
@@ -54,17 +56,22 @@ class PheromoneField:
 
     # Calculate the new direction for an individual ant
     def antWalk(self, ant: Ant):
-        neighbours = ant.getCandidateNeighbours()
+        neighbours = self.getCandidateNeighbours(ant)
         # If only one neighbour is valid, walk to that pixel
         if len(neighbours) == 1:
-            newDirec = neighbours[0]
+            newDirec = ant.calcAngle(neighbours[0]) - ant.direction
+        elif ant.goal in neighbours:
+            newDirec = ant.calcAngle(ant.goal) - ant.direction
         else:
-            # With chance p we either get a random directional change, or a pheromone based directional change
-            rand = np.random.uniform(0, 1)
-            if rand < self.p:
-                newDirec = self.randomDirectionalChange()
-            else:
-                newDirec = self.pheromoneBasedDirection(neighbours, ant)
+            newDirec = None
+            while newDirec is None or not self.is_valid_location(*ant.calcPixel(ant.direction + newDirec)):
+                # With chance p we either get a random directional change, or a pheromone based directional change
+                rand = np.random.uniform(0, 1)
+                if rand < self.p:
+                    newDirec = self.randomDirectionalChange()
+                else:
+                    newDirec = self.pheromoneBasedDirection(neighbours, ant)
+
         # Update the ant's new direction
         ant.updateDirection(newDirec)
         # Let the ant take a step
@@ -136,7 +143,7 @@ class PheromoneField:
             self.field * self.decreaseValue
 
     # Take random new directional change
-    def randomDirectionalChange(self):
+    def randomDirectionalChange(self) -> float:
         return np.random.normal(0, math.pi / 6)
 
     # Calculate directional change based on neighbours
@@ -144,8 +151,12 @@ class PheromoneField:
         # Calculate left and right antenna pixels and their values
         l = ant.getLeftAntenna()
         r = ant.getRightAntenna()
-        fLeft = self.field[l]
-        fRight = self.field[r]
+
+        if l in neighbours:
+            fLeft = self.field[l]
+
+        if r in neighbours:
+            fRight = self.field[r]
 
         if l in neighbours and r in neighbours:
             if fLeft == 0 and fRight == 0:
@@ -177,10 +188,37 @@ class PheromoneField:
         else:
             return np.random.normal(0, math.pi / 6)
 
+    def getCandidateNeighbours(self, ant) -> list:
+        neighbours = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if self.is_valid_location(ant.location[0] + i, ant.location[1] + j) and not (i == 0 and j == 0):
+                    neighbours.append((ant.location[0] + i, ant.location[1] + j))
+
+        # Only use neighbours that have not been visited before
+        nvisited = [x for x in neighbours if x not in ant.path]
+        if not nvisited:
+            return neighbours
+
+        # Only consider neighbours that are not further away from the goal
+        angleEnd = ant.calcAngle(ant.goal)
+        # TODO: optimize using modulo operation instead of arctan
+        nborder = [x for x in nvisited if -math.pi * 3 / 4 < math.atan2(math.sin(angleEnd - ant.calcAngle(x)), math.cos(
+            angleEnd - ant.calcAngle(x))) < math.pi * 3 / 4]
+        if not nborder:
+            return nvisited
+
+        # Only consider neighbours that make sharp turns w.r.t. our current position
+        nfinal = [x for x in nborder if -math.pi / 2 <= math.atan2(math.sin(ant.direction - ant.calcAngle(x)), math.cos(
+            ant.direction - ant.calcAngle(x))) <= math.pi / 2]
+        if not nfinal:
+            return nborder
+        return nfinal
+
     def plot(self, cm='viridis'):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.set_aspect('equal')
-        plt.imshow(self.field, interpolation='nearest', cmap=plt.cm.get_cmap(cm))
+        plt.imshow(self.field.T, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
         plt.colorbar()
         plt.show()
