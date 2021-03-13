@@ -27,6 +27,10 @@ class PheromoneField:
 
         self.rows, self.columns = self.field.shape
 
+    def get_rectangle(self):
+        # xmin, ymin, xmax, ymax
+        return 0, 0, self.columns - 1, self.rows - 1
+
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r):
         for run in range(r):
