@@ -66,6 +66,9 @@ class PheromoneField:
         # Let the ant take a step
         ant.takeStep()
 
+    def is_valid_location(self, x, y):
+        return 0 <= x < self.columns and 0 <= y < self.rows
+
     # Update values of field using the given path
     def updateField(self, path):
 
@@ -81,7 +84,7 @@ class PheromoneField:
             # loop over direct neighbors
             for x in range(cx - 1, cx + 2):
                 for y in range(cy - 1, cy + 2):
-                    if x < 0 or y < 0 or x >= self.columns or y >= self.rows:
+                    if not self.is_valid_location(x, y):
                         # out of range
                         continue
 

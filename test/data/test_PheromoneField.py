@@ -27,7 +27,6 @@ class TestPheromoneField(TestCase):
         test.updateField(path)
 
         self.assertEqual(np.count_nonzero(test.field), 35)
-        self.fail()
 
     def test_update_field_diag(self):
         test = PheromoneField((7, 7), G, True, 0.01, 0.1, 0.1, 2)
@@ -37,6 +36,18 @@ class TestPheromoneField(TestCase):
         test.updateField(path)
 
         self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
+
+    def test_update_field_vee(self):
+        test = PheromoneField((7, 7), G, True, 0.01, 0.1, 0.1, 2)
+        path = [
+            (x, x) for x in range(4)
+        ]
+        path.extend([
+            (x, 6-x) for x in range(4, 7)
+        ])
+        test.updateField(path)
+
+        self.assertEqual(np.count_nonzero(test.field), 7 * 4 + 1)
 
     def test_get_path_length(self):
         self.fail()
