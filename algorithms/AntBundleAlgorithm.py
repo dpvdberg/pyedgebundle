@@ -7,26 +7,31 @@ from bresenham import bresenham
 import numpy as np
 
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
+from data.interpolation.ParametricInterpolate import ParametricInterpolate
 from parser.GraphUtils import GraphUtils
 from util.LineUtils import LineUtils
 
 
 class AntBundleAlgorithm(BundleAlgorithm):
 
-    def __init__(self, graph: DiGraph, runs, segments, decreaseByConstant, decreaseValue, p, threshold,
+    def __init__(self, graph: DiGraph, interpolation: ParametricInterpolate, runs, segments, decreaseByConstant, decreaseValue, p, threshold,
                  maxUpdateDistance):
+        super().__init__(interpolation)
         self.graph = graph
         self.field = PheromoneField(
             GraphUtils.getGraphFieldShape(self.graph), self.graph, decreaseByConstant, decreaseValue, p, threshold,
             maxUpdateDistance)
         self.r = runs
         self.segments = segments
+        self.curves = []
 
     # Bundle edges in the given graph and return a BundledGraph object
     def bundle(self):
         self.field.buildField(self.r)
         curve_points = self.createCurvePoints()
-        # todo: interpolate points and create bundledgraph
+        self.curves = []
+        for curve in curve_points:
+            self.curves.append(self.interpolation.interpolate(curve))
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge
@@ -55,7 +60,7 @@ class AntBundleAlgorithm(BundleAlgorithm):
         return p + np.round(weighted_ps / ps)
 
     # Create and return a BundledGraph with curved edges based on the given Pheromone field
-    def createCurvePoints(self) -> List[List[np.ndarray]]:
+    def createCurvePoints(self) -> List[np.ndarray]:
         curves = []
         for e in self.graph.edges():
             start_node_index, end_node_index = e
@@ -84,6 +89,6 @@ class AntBundleAlgorithm(BundleAlgorithm):
                 curve_points.append(c)
 
             curve_points.append(end_point)
-            curves.append(curve_points)
+            curves.append(np.array(curve_points))
 
         return curves
