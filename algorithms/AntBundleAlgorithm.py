@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 from algorithms.BundleAlgorithm import BundleAlgorithm
 from data.PheromoneField import PheromoneField
@@ -25,7 +25,8 @@ class AntBundleAlgorithm(BundleAlgorithm):
     # Bundle edges in the given graph and return a BundledGraph object
     def bundle(self):
         self.field.buildField(self.r)
-        return self.createCurves()
+        curve_points = self.createCurvePoints()
+        # todo: interpolate points and create bundledgraph
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge
@@ -44,8 +45,8 @@ class AntBundleAlgorithm(BundleAlgorithm):
 
         relative_perpendicular = perpendicular_line - p
         for q in range(line_size):
-            pheromone = self.field.field[perpendicular_line[q]][start_index] + self.field.field[perpendicular_line[q]][
-                end_index]
+            pheromone = self.field.field[tuple(perpendicular_line[q])][start_index] \
+                        + self.field.field[tuple(perpendicular_line[q])][end_index]
             pheromone_exp = pheromone ** 8
             ps += pheromone_exp
 
@@ -54,7 +55,8 @@ class AntBundleAlgorithm(BundleAlgorithm):
         return p + np.round(weighted_ps / ps)
 
     # Create and return a BundledGraph with curved edges based on the given Pheromone field
-    def createCurves(self):
+    def createCurvePoints(self) -> List[List[np.ndarray]]:
+        curves = []
         for e in self.graph.edges():
             start_node_index, end_node_index = e
 
@@ -82,3 +84,6 @@ class AntBundleAlgorithm(BundleAlgorithm):
                 curve_points.append(c)
 
             curve_points.append(end_point)
+            curves.append(curve_points)
+
+        return curves

@@ -1,3 +1,4 @@
+import random
 from unittest import TestCase
 import networkx as nx
 
@@ -17,5 +18,6 @@ G.add_edge(1, 3)
 
 class TestAntBundleAlgorithm(TestCase):
     def test_create_curves(self):
+        random.seed(1)
         a = AntBundleAlgorithm(G, 2, 2, False, 0.1, 0.1, 0.01, 2)
         a.bundle()
