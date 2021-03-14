@@ -33,14 +33,14 @@ class TestAnt(TestCase):
 
     def test_get_candidate_neighbours(self):
         ant = Ant((0, 0), (2, 2))
-        field = PheromoneField((10, 10), G, True, 0.01, 0.1, 0.1, 2)
+        field = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
         neighbours = field.getCandidateNeighbours(ant)
 
         self.assertEqual(set(neighbours), {(0, 1), (1, 1), (1, 0)})
 
     def test_get_candidate_neighbours2(self):
         ant = Ant((2, 2), (0, 0))
-        field = PheromoneField((10, 10), G, True, 0.01, 0.1, 0.1, 2)
+        field = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
         neighbours = field.getCandidateNeighbours(ant)
 
         self.assertEqual(set(neighbours), {(3, 1), (2, 1)})
@@ -49,7 +49,7 @@ class TestAnt(TestCase):
         ant = Ant((2, 2), (0, 0))
         ant.updateDirection(math.pi / 4)
 
-        field = PheromoneField((10, 10), G, True, 0.01, 0.1, 0.1, 2)
+        field = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
         neighbours = field.getCandidateNeighbours(ant)
 
         self.assertEqual(set(neighbours), {(1, 3), (3, 1)})

@@ -44,7 +44,7 @@ class PheromoneField:
                     self.antWalk(ant)
             # Update the field with the new found paths
             for ant in ants:
-                self.updateField(ant.path)
+                self.updateField(ant.path, e[0], e[1])
                 # self.plot()
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
@@ -81,7 +81,7 @@ class PheromoneField:
         return 0 <= x < self.columns and 0 <= y < self.rows
 
     # Update values of field using the given path
-    def updateField(self, path):
+    def updateField(self, path, start_index, end_index):
 
         def visitNeighbors(cell, original_cell=None, visited_nodes=None):
             if original_cell is None:
@@ -122,8 +122,10 @@ class PheromoneField:
         path_constant = self.getPathUpdateConstant(path)
 
         for cell, distance in min_distance_dict.items():
-            self.field[cell] = self.field[cell] \
+            self.field[cell][start_index] = self.field[cell][start_index] \
                                + path_constant * math.exp(-distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
+            self.field[cell][end_index] = self.field[cell][end_index] \
+                                + path_constant * math.exp(-distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
 
     def getPathUpdateConstant(self, path):
         return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** 8
@@ -153,15 +155,14 @@ class PheromoneField:
         r = ant.getRightAntenna()
 
         if l in neighbours:
-            fLeft = self.field[l]
+            fLeft = sum(self.field[l])
 
         if r in neighbours:
-            fRight = self.field[r]
+            fRight = sum(self.field[r])
 
         if l in neighbours and r in neighbours:
             if fLeft == 0 and fRight == 0:
-                if self.field[ant.location] > 0:
-                    # If both are 'bad' neighbours and we are on a path with a high pheromone value, continue walking
+                if sum(self.field[ant.location]) > 0:                    # If both are 'bad' neighbours and we are on a path with a high pheromone value, continue walking
                     return 0
                 else:
                     # If both are 'bad' neighbours and we are on a 'bad' path, take a random directional change
