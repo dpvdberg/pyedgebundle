@@ -4,6 +4,6 @@ from networkx import Graph
 
 # An algorithm that performs edge bundling on a given graph
 class BundleAlgorithm:
-    def bundle(self, graph: Graph) -> BundledGraph:
+    def bundle(self) -> BundledGraph:
         """"Apply edge bundling to the given graph"""
         pass

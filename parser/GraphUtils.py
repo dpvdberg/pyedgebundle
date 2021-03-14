@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import networkx as nx
 from PySide2.QtWidgets import QDialog
 
@@ -39,3 +41,9 @@ class GraphUtils:
             return g, False
 
         # We need to ask the user to specify these properties or skip the name
+
+    @staticmethod
+    def getGraphFieldShape(g: nx.Graph) -> Tuple[int, int, int]:
+        return max(data['x'] for _, data in g.nodes(data=True)) + 1, \
+               max(data['y'] for _, data in g.nodes(data=True)) + 1, \
+               max(n for n in g.nodes) + 1

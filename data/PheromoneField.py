@@ -25,7 +25,7 @@ class PheromoneField:
         self.t = threshold
         self.maxUpdateDistance = maxUpdateDistance
 
-        self.rows, self.columns = self.field.shape
+        self.rows, self.columns, self.numtypes = self.field.shape
 
     def get_rectangle(self):
         # xmin, ymin, xmax, ymax
