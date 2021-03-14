@@ -26,10 +26,20 @@ class AirlineDemo(EBDemo):
         return 'airlines.graphml'
 
     def sanitize(self, g):
+        # ints for node labels
+        mapping = {n: int(n) for n in g}
+        g = nx.relabel_nodes(g, mapping)
+        # tooltip -> name and integer x and y
         d = {}
+
+        min_x = abs(min(d['x'] for _, d in g.nodes(data=True)))
+        min_y = abs(min(d['y'] for _, d in g.nodes(data=True)))
+
         for node, data in g.nodes(data=True):
-            d[node] = data['tooltip'].split('(')[0]
-        nx.set_node_attributes(g, d, 'name')
+            d[node] = {'name': data['tooltip'].split('(')[0],
+                       'x': int(min_x + data['x']),
+                       'y': int(min_y + data['y'])}
+        nx.set_node_attributes(g, d)
         return g
 
 
