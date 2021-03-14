@@ -66,6 +66,8 @@ class TestPheromoneField(TestCase):
         ]
         test.updateField(path, 0, 0)
 
+        test.plot()
+
         self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
 
     def test_update_field_vee(self):

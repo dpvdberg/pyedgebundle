@@ -16,7 +16,8 @@ def euclidean(a, b):
 
 class PheromoneField:
 
-    def __init__(self, pixels: Tuple[int, int, int], graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold, maxUpdateDistance):
+    def __init__(self, pixels: Tuple[int, int, int], graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold,
+                 maxUpdateDistance):
         self.field = np.zeros(pixels)
         self.g = graph
         self.decreaseByConstant = decreaseByConstant
@@ -25,7 +26,7 @@ class PheromoneField:
         self.t = threshold
         self.maxUpdateDistance = maxUpdateDistance
 
-        self.rows, self.columns, self.numtypes = self.field.shape
+        self.columns, self.rows, self.numtypes = self.field.shape
 
     def get_rectangle(self):
         # xmin, ymin, xmax, ymax
@@ -123,9 +124,11 @@ class PheromoneField:
 
         for cell, distance in min_distance_dict.items():
             self.field[cell][start_index] = self.field[cell][start_index] \
-                               + path_constant * math.exp(-distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
+                                            + path_constant * math.exp(
+                -distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
             self.field[cell][end_index] = self.field[cell][end_index] \
-                                + path_constant * math.exp(-distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
+                                          + path_constant * math.exp(
+                -distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
 
     def getPathUpdateConstant(self, path):
         return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** 8
@@ -154,6 +157,8 @@ class PheromoneField:
         l = ant.getLeftAntenna()
         r = ant.getRightAntenna()
 
+        fLeft, fRight = 0, 0
+
         if l in neighbours:
             fLeft = sum(self.field[l])
 
@@ -162,7 +167,8 @@ class PheromoneField:
 
         if l in neighbours and r in neighbours:
             if fLeft == 0 and fRight == 0:
-                if sum(self.field[ant.location]) > 0:                    # If both are 'bad' neighbours and we are on a path with a high pheromone value, continue walking
+                if sum(self.field[ant.location]) > 0:
+                    # If both are 'bad' neighbours and we are on a path with a high pheromone value, continue walking
                     return 0
                 else:
                     # If both are 'bad' neighbours and we are on a 'bad' path, take a random directional change
@@ -220,6 +226,6 @@ class PheromoneField:
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.set_aspect('equal')
-        plt.imshow(self.field.T, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
+        plt.imshow(self.field.sum(axis=-1).T, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
         plt.colorbar()
         plt.show()
