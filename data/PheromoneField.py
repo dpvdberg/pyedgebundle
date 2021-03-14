@@ -16,7 +16,7 @@ def euclidean(a, b):
 
 class PheromoneField:
 
-    def __init__(self, pixels, graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold, maxUpdateDistance):
+    def __init__(self, pixels: Tuple[int, int, int], graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold, maxUpdateDistance):
         self.field = np.zeros(pixels)
         self.g = graph
         self.decreaseByConstant = decreaseByConstant
