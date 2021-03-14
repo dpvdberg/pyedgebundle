@@ -1,3 +1,5 @@
+import os
+import pathlib
 from enum import Enum
 import networkx as nx
 from matplotlib import pyplot as plt
@@ -7,11 +9,15 @@ class EBDemo:
     def path(self) -> str:
         pass
 
-    def sanitize(self, g: nx.Graph) -> nx.Graph:
+    def sanitize(self, g: nx.DiGraph) -> nx.DiGraph:
         pass
 
-    def get_graph(self) -> nx.Graph:
-        g = nx.read_graphml(f'data/{self.path()}')
+    def get_graph(self) -> nx.DiGraph:
+        g = nx.read_graphml(
+            os.path.join(pathlib.Path(__file__).parent.parent.absolute(),
+                         'examplegraphs',
+                         self.path()
+                         ))
         return self.sanitize(g)
 
 
@@ -25,6 +31,7 @@ class AirlineDemo(EBDemo):
             d[node] = data['tooltip'].split('(')[0]
         nx.set_node_attributes(g, d, 'name')
         return g
+
 
 if __name__ == '__main__':
     g = AirlineDemo().get_graph()

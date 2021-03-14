@@ -1,6 +1,7 @@
 from typing import Tuple, List
 
 from algorithms.BundleAlgorithm import BundleAlgorithm
+from data.BundledGraph import BundledGraph
 from data.PheromoneField import PheromoneField
 from networkx import DiGraph
 from bresenham import bresenham
@@ -14,7 +15,8 @@ from util.LineUtils import LineUtils
 
 class AntBundleAlgorithm(BundleAlgorithm):
 
-    def __init__(self, graph: DiGraph, interpolation: ParametricInterpolate, runs, segments, decreaseByConstant, decreaseValue, p, threshold,
+    def __init__(self, graph: DiGraph, interpolation: ParametricInterpolate, runs, segments, decreaseByConstant,
+                 decreaseValue, p, threshold,
                  maxUpdateDistance):
         super().__init__(interpolation)
         self.graph = graph
@@ -31,7 +33,10 @@ class AntBundleAlgorithm(BundleAlgorithm):
         curve_points = self.createCurvePoints()
         self.curves = []
         for curve in curve_points:
-            self.curves.append(self.interpolation.interpolate(curve))
+            x, y = [m.flatten() for m in np.split(curve, 2, axis=1)]
+            self.curves.append(self.interpolation.interpolate(x, y))
+
+        return BundledGraph(self.graph, np.array(self.curves))
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge

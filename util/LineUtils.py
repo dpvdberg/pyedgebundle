@@ -70,7 +70,7 @@ class LineUtils:
         ibottom = LineUtils.line_intersection(bottom, line)
 
         intersections = [ileft, iright, itop, ibottom]
-        valid_intersections = [i for i in intersections if LineUtils.in_rectangle(rectangle, i)]
+        valid_intersections = {(int(i[0]), int(i[1])) for i in intersections if LineUtils.in_rectangle(rectangle, i)}
 
         assert len(valid_intersections) == 2, "An extended line should collide with two points in the rectangle"
 
