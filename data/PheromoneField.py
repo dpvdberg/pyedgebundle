@@ -45,7 +45,7 @@ class PheromoneField:
                     self.antWalk(ant)
             # Update the field with the new found paths
             for ant in ants:
-                self.updateField(ant.path, e[0], e[1])
+                self.updateField(ant.path, ant.start_index, ant.end_index)
                 # self.plot()
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
@@ -53,7 +53,7 @@ class PheromoneField:
     # Return an ant that walks along the given edge
     def initializeEdge(self, edge) -> Ant:
         return Ant((self.g.nodes[edge[0]]['x'], self.g.nodes[edge[0]]['y']),
-                   (self.g.nodes[edge[1]]['x'], self.g.nodes[edge[1]]['y']))
+                   (self.g.nodes[edge[1]]['x'], self.g.nodes[edge[1]]['y']), edge[0], edge[1])
 
     # Calculate the new direction for an individual ant
     def antWalk(self, ant: Ant):

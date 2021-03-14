@@ -6,11 +6,13 @@ import numpy
 
 class Ant:
 
-    def __init__(self, start, goal):
+    def __init__(self, start, goal, start_index, end_index):
         self.location = start
         self.goal = goal
         self.direction = 0
         self.path = [start]
+        self.start_index = start_index
+        self.end_index = end_index
 
     def reachedGoal(self):
         return self.location == self.goal

@@ -39,14 +39,14 @@ class TestPheromoneField(TestCase):
 
         test = PheromoneField((20, 20, 6), G_pres, False, 0.01, 0.1, 0.1, 2)
         test.buildField(10)
-        # test.plot()
+        test.plot()
 
         self.assertEqual(0, 0)
 
     def test_build_field(self):
         test = PheromoneField((10, 10, 5), G, False, 0.01, 0.1, 0.1, 2)
         test.buildField(5)
-        # test.plot()
+        test.plot()
 
         self.assertEqual(0, 0)
 
