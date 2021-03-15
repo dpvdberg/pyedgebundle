@@ -36,11 +36,12 @@ package "pyedgebundling" as ppeb {
 
     class "PhermoneField" as pf {
         field : float[][][]
+        r : int
         --
-        buildField()
-        updateField()
+        buildField(networkx::Graph)
+        updateField(path:Vector2[])
         evaporate()
-        antWalk()
+        antWalk(Ant)
     }
 
     class Ant {
