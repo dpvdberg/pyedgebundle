@@ -9,54 +9,62 @@ package xnetwork {
 }
 
 package "pyedgebundling" as ppeb {
-    class "pyedgebundling" as peb {
+    class "GUI" as gui {
+        UI elements for ant bundle parameter tuning
         --
-        +antBundle(networkx::Graph) : BundledGraph
-        +forceBundle(networkx::Graph) : BundledGraph
-        +plotBundledGraph(BundledGraph)
+        antBundle(networkx::Graph, antBundleParameters) : BundledGraph
+        plotBundledGraph(BundledGraph)
     }
 
     class "BundledGraph" as bg {
         edges : CurvedEdge[]
+        --
+        plot()
     }
 
     interface "BundleAlgorithm" as ba {
         --
-        +{abstract} bundle(networkx::Graph) : BundledGraph
+        {abstract} bundle(networkx::Graph) : BundledGraph
     }
 
     class "AntBundleAlgorithm" as aba {
         phermoneField : PhermoneField
         --
-        +bundle(networkx::Graph) : BundledGraph
-    }
-
-    class "ForceBundleAlgorithm" as fba {
-        --
-        +bundle(networkx::Graph) : BundledGraph
+        bundle(networkx::Graph, antBundleParameters) : BundledGraph
+        createCurvedEdges()
     }
 
     class "PhermoneField" as pf {
-        field : float[][]
+        field : float[][][]
         --
-        +buildField()
-        -step()
-        -antWalk()
+        buildField()
+        updateField()
+        evaporate()
+        antWalk()
+    }
+
+    class Ant {
+        location : Vector2
+        goal : Vector2
+        path : Vector2[]
+        --
+        takeStep()
+        getLeftAntenna()
+        getRightAntenna()
     }
 }
 
-peb --> aba
-peb --> fba
+gui --> aba
 
 aba --|> ba
-fba --|> ba
-
 aba --> pf
 
-peb --> bg
+pf --> Ant
+
+gui --> bg
 ba --> bg
 
-peb ---> xgraph
+gui ---> xgraph
 bg ---|> xgraph
 
 
