@@ -46,6 +46,7 @@ class PheromoneField:
             # Update the field with the new found paths
             for ant in ants:
                 self.updateField(ant.path, ant.start_index, ant.end_index)
+                # print(self.field.sum(axis=2))
                 # self.plot()
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
@@ -143,9 +144,10 @@ class PheromoneField:
     def evaporate(self):
         # Depending on whether the user choose a constant value decrease, or multiplying by a factor between (0, 1)
         if (self.decreaseByConstant):
-            self.field - self.decreaseValue
+            self.field = self.field - self.decreaseValue
+            self.field[self.field < 0] = 0
         else:
-            self.field * self.decreaseValue
+            self.field = self.field * self.decreaseValue
 
     # Take random new directional change
     def randomDirectionalChange(self) -> float:

@@ -89,7 +89,7 @@ class TestPheromoneField(TestCase):
 
     def test_pheromone_based_direction(self):
         test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
-        ant = Ant((1,1), (8,8))
+        ant = Ant((1,1), (8,8), 0, 0)
 
     def test_plot(self):
         test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)

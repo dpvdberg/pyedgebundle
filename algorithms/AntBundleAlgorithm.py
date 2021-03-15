@@ -9,7 +9,7 @@ import numpy as np
 
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
 from data.interpolation.ParametricInterpolate import ParametricInterpolate
-from parser.GraphUtils import GraphUtils
+from parse.GraphUtils import GraphUtils
 from util.LineUtils import LineUtils
 
 
