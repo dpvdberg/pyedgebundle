@@ -1,6 +1,7 @@
 import math
 from typing import Tuple
 
+from scipy import spatial
 import numpy as np
 from networkx import DiGraph
 from matplotlib import pyplot as plt
@@ -44,10 +45,14 @@ class PheromoneField:
                 while not ant.reachedGoal():
                     self.antWalk(ant)
             # Update the field with the new found paths
+            s = np.zeros(self.field.shape)
             for ant in ants:
-                self.updateField(ant.path, ant.start_index, ant.end_index)
+                s += self.updateField(ant.path, ant.start_index, ant.end_index)
                 # print(self.field.sum(axis=2))
                 # self.plot()
+
+            self.field += s
+
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
 
@@ -84,52 +89,57 @@ class PheromoneField:
 
     # Update values of field using the given path
     def updateField(self, path, start_index, end_index):
+        path = np.array(path)
+        update_indices = np.array(path)
+        # find relevant indices to update
+        directions = ([0, 1], [0, -1], [1, 0], [-1, 0])
+        for direction in np.array(directions):
+            for i in range(1, self.maxUpdateDistance + 1):
+                update_indices = np.vstack([update_indices, path + i * direction])
 
-        def visitNeighbors(cell, original_cell=None, visited_nodes=None):
-            if original_cell is None:
-                original_cell = cell
+        # find relevant indices around start and end points
+        ball_offsets = list(range(-self.maxUpdateDistance, self.maxUpdateDistance + 1))
+        ball_offsets.remove(0)
+        ball_vectors = np.array(np.meshgrid(ball_offsets, ball_offsets)).T.reshape(-1, 2)
+        for p in [path[0], path[-1]]:
+            for ball_vector in ball_vectors:
+                update_indices = np.vstack([update_indices, p + ball_vector])
 
-            if visited_nodes is None:
-                visited_nodes = {}
+        # remove duplicate vectors
+        update_indices = np.unique(update_indices, axis=0)
 
-            cx, cy = cell
+        # remove out of bounds indices
+        # - No index can ever be negative
+        update_indices = update_indices[~(update_indices < 0).any(axis=1)]
+        x_mask = update_indices[:, 0] < self.columns
+        update_indices = update_indices[x_mask]
+        y_mask = update_indices[:, 1] < self.rows
+        update_indices = update_indices[y_mask]
 
-            # loop over direct neighbors
-            for x in range(cx - 1, cx + 2):
-                for y in range(cy - 1, cy + 2):
-                    if not self.is_valid_location(x, y):
-                        # out of range
-                        continue
+        # lexicographical sort
+        update_indices = update_indices[np.lexsort(update_indices.T[::-1])]
 
-                    c = (x, y)
-                    if c not in visited_nodes:
-                        # euclidean distance
-                        d = euclidean(original_cell, c)
-                        if d <= self.maxUpdateDistance:
-                            visited_nodes[c] = d
-                            visitNeighbors(c, original_cell, visited_nodes)
+        # compute the distance from the relevant indices to the path
+        distances = spatial.distance.cdist(update_indices, np.array(path)).min(axis=1)
 
-            return visited_nodes
-
-        # A dictionary mapping a cell to the minimum distance to the path
-        min_distance_dict = {}
-
-        for cell in path:
-            neighbors = visitNeighbors(cell)
-            min_distance_dict = {k: min(i for i in (min_distance_dict.get(k), neighbors.get(k)) if i is not None)
-                                 for k in min_distance_dict.keys() | neighbors}
-
-        # update field using dict
-        # TODO: collect min_distance_dict for all paths and then compute average (or KDE?) for overlapping cells
+        # apply path diffuse function
         path_constant = self.getPathUpdateConstant(path)
+        distances = path_constant * np.exp(-distances ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
 
-        for cell, distance in min_distance_dict.items():
-            self.field[cell][start_index] = self.field[cell][start_index] \
-                                            + path_constant * math.exp(
-                -distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
-            self.field[cell][end_index] = self.field[cell][end_index] \
-                                          + path_constant * math.exp(
-                -distance ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
+        # create the difference matrix which will store the matrix added to the pheromone field
+        diff_matrix = np.zeros(self.field.shape[:2])
+
+        # put distance at correct position by raveling the indices
+        flat_index_array = np.ravel_multi_index(update_indices.T, diff_matrix.shape)
+        np.ravel(diff_matrix)[flat_index_array] = distances
+
+        # add type axis
+        diff_matrix_typed = np.repeat(diff_matrix[:, :, np.newaxis], self.numtypes, axis=2)
+
+        # filter unmodified types
+        diff_matrix_typed[:, :, ~np.isin(np.arange(self.numtypes), [start_index, end_index])] = 0
+
+        return diff_matrix_typed
 
     def getPathUpdateConstant(self, path):
         return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** 8

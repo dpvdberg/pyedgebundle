@@ -55,9 +55,10 @@ class TestPheromoneField(TestCase):
         path = [
             (3, x) for x in range(7)
         ]
-        test.updateField(path, 0, 0)
+        test.updateField(path, 0, 3)
 
-        self.assertEqual(np.count_nonzero(test.field), 35)
+        self.assertEqual(np.count_nonzero(test.field), 35 * 2)
+        self.assertEqual(list(test.field[3][0]), [1, 0, 0, 1, 0])
 
     def test_update_field_diag(self):
         test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
@@ -79,6 +80,8 @@ class TestPheromoneField(TestCase):
             (x, 6-x) for x in range(4, 7)
         ])
         test.updateField(path, 0, 0)
+
+        test.plot()
 
         self.assertEqual(np.count_nonzero(test.field), 7 * 4 + 1)
 
