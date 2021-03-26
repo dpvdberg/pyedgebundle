@@ -33,7 +33,12 @@ class TestAntBundleAlgorithm(TestCase):
         pos = {
             n: (d['x'], d['y']) for n, d in a.graph.nodes(data=True)
         }
+        # Plot original network
         nx.draw_networkx(a.graph, pos)
+        plt.show()
+
+        # Plot pheromone field
+        a.field.plot()
         plt.show()
 
     def test_demo(self):

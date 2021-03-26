@@ -20,7 +20,7 @@ class AntBundleAlgorithm(BundleAlgorithm):
                  maxUpdateDistance):
         super().__init__(interpolation)
         self.graph = graph
-        self.field = PheromoneField(
+        self.field: PheromoneField = PheromoneField(
             GraphUtils.getGraphFieldShape(self.graph), self.graph, decreaseByConstant, decreaseValue, p, threshold,
             maxUpdateDistance)
         self.r = runs
