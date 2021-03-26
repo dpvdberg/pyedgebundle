@@ -30,13 +30,15 @@ class AntBundleAlgorithm(BundleAlgorithm):
     # Bundle edges in the given graph and return a BundledGraph object
     def bundle(self):
         self.field.buildField(self.r)
+        self.createCurvedEdges()
+        return BundledGraph(self.graph, np.array(self.curves))
+
+    def createCurvedEdges(self):
         curve_points = self.createCurvePoints()
         self.curves = []
         for curve in curve_points:
             x, y = [m.flatten() for m in np.split(curve, 2, axis=1)]
             self.curves.append(self.interpolation.interpolate(x, y))
-
-        return BundledGraph(self.graph, np.array(self.curves))
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge

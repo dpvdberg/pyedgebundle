@@ -24,8 +24,8 @@ G.add_edge(1, 3)
 
 class TestPheromoneField(TestCase):
     def test_presentation(self):
-        random.seed(3)
-        np.random.seed(3)
+        random.seed(1)
+        np.random.seed(1)
         G_pres = nx.DiGraph()
         G_pres.add_nodes_from([
             (1, {"x": 2, "y": 10}),
@@ -41,7 +41,7 @@ class TestPheromoneField(TestCase):
         G_pres.add_edge(2, 3)
         G_pres.add_edge(3, 5)
 
-        test = PheromoneField((20, 20, 6), G_pres, False, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((20, 20, 6), G_pres,  True, 0, 0.4, 0.000005, 3)
         test.buildField(10)
         test.plot()
 

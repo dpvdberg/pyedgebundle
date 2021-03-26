@@ -2,6 +2,7 @@ import random
 from unittest import TestCase
 import networkx as nx
 from matplotlib import pyplot as plt
+import numpy as np
 
 from algorithms.AntBundleAlgorithm import AntBundleAlgorithm
 from data.interpolation.BSplineInterpolate import BSplineInterpolate
@@ -23,8 +24,11 @@ for i in range(1, 6):
 class TestAntBundleAlgorithm(TestCase):
     def test_example(self):
         random.seed(1)
-        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=3), 10, 4, True, 0.0015, 0.4, 0.0005, 5)
-        a.bundle().plot()
+        np.random.seed(1)
+        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=3), 10, 4, True, 0, 0.4, 0.0005, 5)
+        result = a.bundle()
+        a.field.plot()
+        result.plot()
 
         pos = {
             n: (d['x'], d['y']) for n, d in a.graph.nodes(data=True)
