@@ -1,4 +1,6 @@
 import math
+import random
+
 import numpy as np
 from unittest import TestCase
 
@@ -6,7 +8,6 @@ import networkx as nx
 
 from data.Ant import Ant
 from data.PheromoneField import PheromoneField
-
 
 G = nx.DiGraph()
 G.add_nodes_from([
@@ -20,8 +21,11 @@ G.add_edge(2, 3)
 G.add_edge(1, 4)
 G.add_edge(1, 3)
 
+
 class TestPheromoneField(TestCase):
     def test_presentation(self):
+        random.seed(3)
+        np.random.seed(3)
         G_pres = nx.DiGraph()
         G_pres.add_nodes_from([
             (1, {"x": 2, "y": 10}),
@@ -44,7 +48,9 @@ class TestPheromoneField(TestCase):
         self.assertEqual(0, 0)
 
     def test_build_field(self):
-        test = PheromoneField((10, 10, 5), G, False, 0.01, 0.1, 0.1, 2)
+        random.seed(1)
+        np.random.seed(2)
+        test = PheromoneField((10, 10, 5), G, True, 0.0015, 0.4, 0.0005, 3)
         test.buildField(5)
         test.plot()
 
@@ -55,7 +61,7 @@ class TestPheromoneField(TestCase):
         path = [
             (3, x) for x in range(7)
         ]
-        test.updateField(path, 0, 3)
+        test.field += test.updateField(path, 0, 3)
 
         self.assertEqual(np.count_nonzero(test.field), 35 * 2)
         self.assertEqual(list(test.field[3][0]), [1, 0, 0, 1, 0])
@@ -65,7 +71,18 @@ class TestPheromoneField(TestCase):
         path = [
             (x, x) for x in range(7)
         ]
-        test.updateField(path, 0, 0)
+        test.field += test.updateField(path, 0, 0)
+
+        test.plot()
+
+        self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
+
+    def test_update_field_corner(self):
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        path = [
+            (3, 0), (3, 1), (3, 2), (3, 3), (4, 3), (5, 3), (6, 3)
+        ]
+        test.field += test.updateField(path, 0, 0)
 
         test.plot()
 
@@ -77,9 +94,9 @@ class TestPheromoneField(TestCase):
             (x, x) for x in range(4)
         ]
         path.extend([
-            (x, 6-x) for x in range(4, 7)
+            (x, 6 - x) for x in range(4, 7)
         ])
-        test.updateField(path, 0, 0)
+        test.field += test.updateField(path, 0, 0)
 
         test.plot()
 
@@ -92,7 +109,7 @@ class TestPheromoneField(TestCase):
 
     def test_pheromone_based_direction(self):
         test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
-        ant = Ant((1,1), (8,8), 0, 0)
+        ant = Ant((1, 1), (8, 8), 0, 0)
 
     def test_plot(self):
         test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
