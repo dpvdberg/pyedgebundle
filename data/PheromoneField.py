@@ -5,6 +5,7 @@ from typing import Tuple
 
 import numpy as np
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from networkx import DiGraph
 from scipy import spatial
 
@@ -263,6 +264,9 @@ class PheromoneField:
         acc_field = self.field.sum(axis=-1).T
         if log_scale:
             acc_field = np.log1p(acc_field)
-        plt.imshow(acc_field, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
-        plt.colorbar()
+        im = plt.imshow(acc_field, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
+
+        plt.colorbar(im, cax=cax)
         plt.show()
