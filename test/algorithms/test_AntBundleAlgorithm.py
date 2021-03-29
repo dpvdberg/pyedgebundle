@@ -39,7 +39,7 @@ class TestAntBundleAlgorithm(TestCase):
     def test_example(self):
         random.seed(1)
         np.random.seed(1)
-        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 30, 4, True, 0.0001, 0.4, 0.0005, 5)
+        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 30, 4, True, 0.0001, 0.4, 0.0005, 5, 8)
         result = a.bundle()
         a.field.plot()
         result.plot()
@@ -58,7 +58,7 @@ class TestAntBundleAlgorithm(TestCase):
     def test_example2(self):
         random.seed(1)
         np.random.seed(1)
-        a = AntBundleAlgorithm(G_pres, BSplineInterpolate(max_degree=2), 50, 20, True, 0.0015, 0.4, 0.0005, 10)
+        a = AntBundleAlgorithm(G_pres, BSplineInterpolate(max_degree=2), 10, 10, True, 0.0015, 0.4, 0.0005, 10, 8)
         result = a.bundle()
         a.field.plot()
         result.plot()
@@ -76,5 +76,5 @@ class TestAntBundleAlgorithm(TestCase):
 
     def test_demo(self):
         g = AirlineDemo().get_graph()
-        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 1, 4, True, 0.0015, 0.4, 0.0005, 5)
+        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 1, 4, True, 0.0015, 0.4, 0.0005, 5, 8)
         a.bundle().plot()

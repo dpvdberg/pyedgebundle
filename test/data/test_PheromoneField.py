@@ -39,7 +39,7 @@ class TestPheromoneField(TestCase):
         G_pres.add_edge(2, 3)
         G_pres.add_edge(3, 5)
 
-        test = PheromoneField((20, 20, 6), G_pres,  True, 0, 0.4, 0.000005, 3)
+        test = PheromoneField((20, 20, 6), G_pres,  True, 0, 0.4, 0.000005, 3, 8)
         test.buildField(10)
         test.plot()
 
@@ -48,14 +48,14 @@ class TestPheromoneField(TestCase):
     def test_build_field(self):
         random.seed(1)
         np.random.seed(2)
-        test = PheromoneField((10, 10, 5), G, True, 0.0015, 0.4, 0.0005, 3)
+        test = PheromoneField((10, 10, 5), G, True, 0.0015, 0.4, 0.0005, 3, 8)
         test.buildField(5)
         test.plot()
 
         self.assertEqual(0, 0)
 
     def test_update_field(self):
-        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         path = [
             (3, x) for x in range(7)
         ]
@@ -65,7 +65,7 @@ class TestPheromoneField(TestCase):
         self.assertEqual(list(test.field[3][0]), [1, 0, 0, 1, 0])
 
     def test_update_field_diag(self):
-        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         path = [
             (x, x) for x in range(7)
         ]
@@ -76,7 +76,7 @@ class TestPheromoneField(TestCase):
         self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
 
     def test_update_field_corner(self):
-        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         path = [
             (3, 0), (3, 1), (3, 2), (3, 3), (4, 3), (5, 3), (6, 3)
         ]
@@ -87,7 +87,7 @@ class TestPheromoneField(TestCase):
         self.assertEqual(np.count_nonzero(test.field), 7 + 6 * 2 + 5 * 2)
 
     def test_update_field_vee(self):
-        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         path = [
             (x, x) for x in range(4)
         ]
@@ -101,16 +101,16 @@ class TestPheromoneField(TestCase):
         self.assertEqual(np.count_nonzero(test.field), 7 * 4 + 1)
 
     def test_random_directional_change(self):
-        test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         for i in range(0, 100):
             self.assertTrue(-math.pi <= test.randomDirectionalChange() <= math.pi)
 
     def test_pheromone_based_direction(self):
-        test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((10, 10, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         ant = Ant((1, 1), (8, 8), 0, 0)
 
     def test_plot(self):
-        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2)
+        test = PheromoneField((7, 7, 5), G, True, 0.01, 0.1, 0.1, 2, 8)
         path = [
             (x, x) for x in range(7)
         ]

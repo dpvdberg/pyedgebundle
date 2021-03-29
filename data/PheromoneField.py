@@ -21,7 +21,7 @@ def euclidean(a, b):
 class PheromoneField:
 
     def __init__(self, pixels: Tuple[int, int, int], graph: DiGraph, decreaseByConstant, decreaseValue, p, threshold,
-                 maxUpdateDistance):
+                 maxUpdateDistance, path_exp):
         self.field = np.zeros(pixels)
         self.g = graph
         self.decreaseByConstant = decreaseByConstant
@@ -29,6 +29,7 @@ class PheromoneField:
         self.p = p
         self.t = threshold
         self.maxUpdateDistance = maxUpdateDistance
+        self.path_exp = path_exp
 
         self.diff_matrix_lock = Lock()
         self.diff_matrix = np.zeros(self.field.shape)
@@ -164,7 +165,7 @@ class PheromoneField:
         self.diff_matrix_lock.release()
 
     def getPathUpdateConstant(self, path):
-        return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** 8
+        return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** self.path_exp
 
     def getPathLength(self, path):
         s = 0

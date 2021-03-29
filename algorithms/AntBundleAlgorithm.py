@@ -17,12 +17,12 @@ class AntBundleAlgorithm(BundleAlgorithm):
 
     def __init__(self, graph: DiGraph, interpolation: ParametricInterpolate, runs, segments, decreaseByConstant,
                  decreaseValue, p, threshold,
-                 maxUpdateDistance):
+                 maxUpdateDistance, path_exp):
         super().__init__(interpolation)
         self.graph = graph
         self.field: PheromoneField = PheromoneField(
             GraphUtils.getGraphFieldShape(self.graph), self.graph, decreaseByConstant, decreaseValue, p, threshold,
-            maxUpdateDistance)
+            maxUpdateDistance, path_exp)
         self.r = runs
         self.segments = segments
         self.curves = []
