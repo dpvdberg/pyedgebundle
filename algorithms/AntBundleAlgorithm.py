@@ -1,12 +1,11 @@
-from typing import Tuple, List
+from typing import List
+
+import numpy as np
+from networkx import DiGraph
 
 from algorithms.BundleAlgorithm import BundleAlgorithm
 from data.BundledGraph import BundledGraph
 from data.PheromoneField import PheromoneField
-from networkx import DiGraph
-from bresenham import bresenham
-import numpy as np
-
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
 from data.interpolation.ParametricInterpolate import ParametricInterpolate
 from parse.GraphUtils import GraphUtils
@@ -37,8 +36,10 @@ class AntBundleAlgorithm(BundleAlgorithm):
         curve_points = self.createCurvePoints()
         self.curves = []
         for curve in curve_points:
-            x, y = [m.flatten() for m in np.split(curve, 2, axis=1)]
-            self.curves.append(self.interpolation.interpolate(x, y))
+            num_points, _ = curve.shape
+            if num_points >= 2:
+                x, y = [m.flatten() for m in np.split(curve, 2, axis=1)]
+                self.curves.append(self.interpolation.interpolate(x, y))
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge
@@ -96,6 +97,9 @@ class AntBundleAlgorithm(BundleAlgorithm):
                 curve_points.append(c)
 
             curve_points.append(end_point)
-            curves.append(np.array(curve_points))
+            curve_points = np.array(curve_points)
+            curve_points = np.unique(curve_points, axis=0)
+
+            curves.append(curve_points)
 
         return curves
