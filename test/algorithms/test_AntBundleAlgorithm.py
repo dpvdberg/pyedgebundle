@@ -38,8 +38,8 @@ G_pres.add_edge(3, 5)
 class TestAntBundleAlgorithm(TestCase):
     def test_example(self):
         random.seed(1)
-        np.random.seed(1)
-        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 30, 4, True, 0.0001, 0.4, 0.0005, 5, 8)
+        np.random.seed(10)
+        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 50, 4, True, 0.0001, 0.4, 0.0005, 5, 6)
         result = a.bundle()
         a.field.plot()
         result.plot()
@@ -48,6 +48,7 @@ class TestAntBundleAlgorithm(TestCase):
             n: (d['x'], d['y']) for n, d in a.graph.nodes(data=True)
         }
         # Plot original network
+        plt.axes().set_aspect('equal')
         nx.draw_networkx(a.graph, pos)
         plt.show()
 
@@ -58,9 +59,9 @@ class TestAntBundleAlgorithm(TestCase):
     def test_example2(self):
         random.seed(1)
         np.random.seed(1)
-        a = AntBundleAlgorithm(G_pres, BSplineInterpolate(max_degree=2), 10, 10, True, 0.0015, 0.4, 0.0005, 10, 8)
+        a = AntBundleAlgorithm(G_pres, BSplineInterpolate(max_degree=2), 400, 2, False, 0.96, 0.3, 0.00005, 5, 5)
         result = a.bundle()
-        a.field.plot()
+        a.field.plot(cm='plasma')
         result.plot()
 
         pos = {
@@ -76,5 +77,12 @@ class TestAntBundleAlgorithm(TestCase):
 
     def test_demo(self):
         g = AirlineDemo().get_graph()
-        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 1, 4, True, 0.0015, 0.4, 0.0005, 5, 8)
+        d = {}
+        for node, data in g.nodes(data=True):
+            d[node] = {'x': int(data["x"]/4),
+                       'y': int(data["y"] / 4)}
+        nx.set_node_attributes(g, d)
+
+        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 10, 2, False, 0.98, 0.4, 0.0005, 5, 6)
         a.bundle().plot()
+        a.field.plot()

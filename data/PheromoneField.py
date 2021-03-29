@@ -236,7 +236,7 @@ class PheromoneField:
                 if self.is_valid_location(ant.location[0] + i, ant.location[1] + j) and not (i == 0 and j == 0):
                     neighbours.append((ant.location[0] + i, ant.location[1] + j))
 
-        trail = ant.path[:10]
+        trail = ant.path[-10:]
         # Only use neighbours that have not been visited before
         nvisited = [x for x in neighbours if x not in trail]
         if not nvisited:
