@@ -9,7 +9,6 @@ import numpy as np
 from networkx import DiGraph
 from matplotlib import pyplot as plt
 import random
-from ordered_set import OrderedSet
 
 from data.Ant import Ant
 
@@ -61,7 +60,7 @@ class PheromoneField:
                 # Wait for ants to finish walking
                 executor.shutdown(wait=True)
 
-            print("All ants completed walk")
+            # print("All ants completed walk")
             # Update the field with the new found paths
 
             self.diff_matrix = np.zeros(self.field.shape)
