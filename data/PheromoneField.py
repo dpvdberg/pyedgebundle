@@ -1,14 +1,12 @@
-import itertools
 import math
 from concurrent.futures.thread import ThreadPoolExecutor
-from threading import Thread, Lock
+from threading import Lock
 from typing import Tuple
 
-from scipy import spatial
 import numpy as np
-from networkx import DiGraph
 from matplotlib import pyplot as plt
-import random
+from networkx import DiGraph
+from scipy import spatial
 
 from data.Ant import Ant
 
@@ -258,10 +256,13 @@ class PheromoneField:
             return nborder
         return nfinal
 
-    def plot(self, cm='viridis'):
+    def plot(self, cm='viridis', log_scale=True):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.set_aspect('equal')
-        plt.imshow(self.field.sum(axis=-1).T, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
+        acc_field = self.field.sum(axis=-1).T
+        if log_scale:
+            acc_field = np.log1p(acc_field)
+        plt.imshow(acc_field, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
         plt.colorbar()
         plt.show()
