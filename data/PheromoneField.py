@@ -1,6 +1,7 @@
+import itertools
 import math
 from concurrent.futures.thread import ThreadPoolExecutor
-from threading import Thread
+from threading import Thread, Lock
 from typing import Tuple
 
 from scipy import spatial
@@ -8,6 +9,7 @@ import numpy as np
 from networkx import DiGraph
 from matplotlib import pyplot as plt
 import random
+from ordered_set import OrderedSet
 
 from data.Ant import Ant
 
@@ -29,6 +31,9 @@ class PheromoneField:
         self.t = threshold
         self.maxUpdateDistance = maxUpdateDistance
 
+        self.diff_matrix_lock = Lock()
+        self.diff_matrix = np.zeros(self.field.shape)
+
         self.columns, self.rows, self.numtypes = self.field.shape
 
     def get_rectangle(self):
@@ -38,6 +43,7 @@ class PheromoneField:
     def ant_walk_loop(self, ant: Ant):
         while not ant.reachedGoal():
             self.antWalk(ant)
+        # print('processed: ' + str(ant.goal))
 
 
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
@@ -52,21 +58,21 @@ class PheromoneField:
                     ants.append(ant)
                     executor.submit(self.ant_walk_loop, ant)
 
+                # Wait for ants to finish walking
                 executor.shutdown(wait=True)
 
-            # Wait for ants to finish walking
+            print("All ants completed walk")
             # Update the field with the new found paths
-            diff_matrices_future = []
+
+            self.diff_matrix = np.zeros(self.field.shape)
 
             with ThreadPoolExecutor() as executor:
                 for ant in ants:
-                    future_matrix = executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
-                    diff_matrices_future.append(future_matrix)
+                    executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
 
                 executor.shutdown(wait=True)
 
-            for diff_matrix_future in diff_matrices_future:
-                self.field += diff_matrix_future.result()
+            self.field += self.diff_matrix
 
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
@@ -149,12 +155,14 @@ class PheromoneField:
         np.ravel(diff_matrix)[flat_index_array] = distances
 
         # add type axis
-        diff_matrix_typed = np.repeat(diff_matrix[:, :, np.newaxis], self.numtypes, axis=2)
+        diff_matrix = np.repeat(diff_matrix[:, :, np.newaxis], self.numtypes, axis=2)
 
         # filter unmodified types
-        diff_matrix_typed[:, :, ~np.isin(np.arange(self.numtypes), [start_index, end_index])] = 0
+        diff_matrix[:, :, ~np.isin(np.arange(self.numtypes), [start_index, end_index])] = 0
 
-        return diff_matrix_typed
+        self.diff_matrix_lock.acquire()
+        self.diff_matrix += diff_matrix
+        self.diff_matrix_lock.release()
 
     def getPathUpdateConstant(self, path):
         return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** 8
@@ -229,7 +237,7 @@ class PheromoneField:
                 if self.is_valid_location(ant.location[0] + i, ant.location[1] + j) and not (i == 0 and j == 0):
                     neighbours.append((ant.location[0] + i, ant.location[1] + j))
 
-        trail = ant.path[:20]
+        trail = ant.path[:10]
         # Only use neighbours that have not been visited before
         nvisited = [x for x in neighbours if x not in trail]
         if not nvisited:

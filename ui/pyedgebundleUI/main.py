@@ -10,7 +10,7 @@ from PySide2.QtCore import QFile, Qt
 
 import matplotlib
 
-from parser.GraphUtils import GraphUtils
+from parse.GraphUtils import GraphUtils
 from ui.EBCanvas import EBCanvas
 
 matplotlib.use('Qt5Agg')
