@@ -1,7 +1,7 @@
 import math
 from concurrent.futures.thread import ThreadPoolExecutor
 from threading import Lock
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -9,6 +9,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from networkx import DiGraph
 from scipy import spatial
 
+from algorithms.ProgressCallback import ProgressCallback
 from data.Ant import Ant
 
 
@@ -35,20 +36,47 @@ class PheromoneField:
 
         self.columns, self.rows, self.numtypes = self.field.shape
 
+        self.total_progress: float = 0.0
+        self.progress_subtask: float = 0.0
+        self.subtask: str = "Waiting..."
+        self.run = 0
+        self.runs = 0
+        self.completed_ants = 0
+        self.progress_lock = Lock()
+
+        self.progress_callback: Optional[ProgressCallback] = None
+        self.stopped: bool = False
+
     def get_rectangle(self):
         # xmin, ymin, xmax, ymax
         return 0, 0, self.columns - 1, self.rows - 1
 
     def ant_walk_loop(self, ant: Ant):
-        while not ant.reachedGoal():
+        while not ant.reachedGoal() and not self.stopped:
             self.antWalk(ant)
-        # print('processed: ' + str(ant.goal))
 
+        # update progress
+        if self.progress_callback:
+            self.progress_lock.acquire()
+            self.completed_ants += 1
+            self.progress_subtask = self.completed_ants / len(self.g.edges)
+            # field progress equals ant walk + update field over all runs
+            previous_run_progress = self.run / self.runs
+            self.total_progress = previous_run_progress + (self.progress_subtask / 2) / self.runs
+            self.progress_callback.progress(self.total_progress, self.progress_subtask, self.subtask)
+            self.progress_lock.release()
 
     # Generate a pheromone field in r runs, where each run all edges are traversed by one ant
     def buildField(self, r):
+        self.runs = r
         for run in range(r):
-            print("run: ", run)
+            if self.stopped:
+                break
+            # progress info
+            self.subtask = f"Run {run}:   ant walk   "
+            self.completed_ants = 0
+
+            self.run = run
             ants = []
             with ThreadPoolExecutor() as executor:
                 for e in self.g.edges:
@@ -63,8 +91,14 @@ class PheromoneField:
             # print("All ants completed walk")
             # Update the field with the new found paths
 
-            self.diff_matrix = np.zeros(self.field.shape)
+            if self.stopped:
+                break
 
+            # progress info
+            self.subtask = f"Run {run}: update field"
+            self.completed_ants = 0
+
+            self.diff_matrix = np.zeros(self.field.shape)
             with ThreadPoolExecutor() as executor:
                 for ant in ants:
                     executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
@@ -75,6 +109,8 @@ class PheromoneField:
 
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
+
+        self.total_progress = 1.0
 
     # Return an ant that walks along the given edge
     def initializeEdge(self, edge) -> Ant:
@@ -162,6 +198,16 @@ class PheromoneField:
         self.diff_matrix_lock.acquire()
         self.diff_matrix += diff_matrix
         self.diff_matrix_lock.release()
+
+        if self.progress_callback:
+            self.progress_lock.acquire()
+            self.completed_ants += 1
+            self.progress_subtask = self.completed_ants / len(self.g.edges)
+            # field progress equals ant walk + update field
+            previous_run_progress = self.run / self.runs
+            self.total_progress = previous_run_progress + (0.5 + self.progress_subtask / 2) / self.runs
+            self.progress_callback.progress(self.total_progress, self.progress_subtask, self.subtask)
+            self.progress_lock.release()
 
     def getPathUpdateConstant(self, path):
         return (euclidean(path[0], path[-1]) / self.getPathLength(path)) ** self.path_exp
@@ -257,16 +303,24 @@ class PheromoneField:
             return nborder
         return nfinal
 
-    def plot(self, cm='viridis', log_scale=True):
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
+    def plot(self, fig=None, ax=None, show=True, cm='viridis', log_scale=True):
+        if fig is None and ax is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+        elif fig is None:
+            ax.cla()
+        elif ax is None:
+            raise Exception("Cannot pass figure without axes")
+
         ax.set_aspect('equal')
+
         acc_field = self.field.sum(axis=-1).T
         if log_scale:
             acc_field = np.log1p(acc_field)
-        im = plt.imshow(acc_field, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
+        im = ax.imshow(acc_field, interpolation='nearest', cmap=plt.cm.get_cmap(cm), origin='lower')
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.1)
 
         plt.colorbar(im, cax=cax)
-        plt.show()
+        if show:
+            plt.show()

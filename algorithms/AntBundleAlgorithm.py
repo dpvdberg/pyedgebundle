@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
-import pandas as pd
 from networkx import DiGraph
 
 from algorithms.BundleAlgorithm import BundleAlgorithm
+from algorithms.ProgressCallback import ProgressCallback
 from data.BundledGraph import BundledGraph
 from data.PheromoneField import PheromoneField
 # Edge bundling algorithm that performs edge bundling based on ant colony optimization
@@ -13,8 +13,7 @@ from parse.GraphUtils import GraphUtils
 from util.LineUtils import LineUtils
 
 
-class AntBundleAlgorithm(BundleAlgorithm):
-
+class AntBundleAlgorithm(BundleAlgorithm, ProgressCallback):
     def __init__(self, graph: DiGraph, interpolation: ParametricInterpolate, runs, segments, decreaseByConstant,
                  decreaseValue, p, threshold,
                  maxUpdateDistance, path_exp):
@@ -23,24 +22,46 @@ class AntBundleAlgorithm(BundleAlgorithm):
         self.field: PheromoneField = PheromoneField(
             GraphUtils.getGraphFieldShape(self.graph), self.graph, decreaseByConstant, decreaseValue, p, threshold,
             maxUpdateDistance, path_exp)
+        # register callback
+        self.field.progress_callback = self
         self.r = runs
         self.segments = segments
         self.curves = []
 
+        self.progress_callback: Optional[ProgressCallback] = None
+        self.stopped: bool = False
+
+    def stop(self):
+        self.stopped = True
+        self.field.stopped = True
+
+    def progress(self, overall, subtask_progress, subtask_name):
+        # Build field progress callback
+        if self.progress_callback:
+            self.progress_callback.progress(overall, subtask_progress, subtask_name)
+
     # Bundle edges in the given graph and return a BundledGraph object
     def bundle(self):
         self.field.buildField(self.r)
+        if self.stopped:
+            return BundledGraph(self.graph, np.array([]))
+
         self.createCurvedEdges()
         return BundledGraph(self.graph, np.array(self.curves))
 
     def createCurvedEdges(self):
         curve_points = self.createCurvePoints()
         self.curves = []
-        for curve in curve_points:
+        curve_points_count = len(curve_points)
+        for i, curve in enumerate(curve_points):
             num_points, _ = curve.shape
             if num_points >= 2:
                 x, y = [m.flatten() for m in np.split(curve, 2, axis=1)]
                 self.curves.append(self.interpolation.interpolate(x, y))
+
+            if self.progress_callback:
+                self.progress_callback.progress((i + 1) / curve_points_count, (i + 1) / curve_points_count,
+                                                "Curve interpolation")
 
     def rasterizeEdge(self, edge) -> np.ndarray:
         start, end = edge

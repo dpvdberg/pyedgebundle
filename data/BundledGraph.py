@@ -8,13 +8,14 @@ class BundledGraph:
         self.curves = curves
         self.graph = graph
 
-    def plot(self, fig=None, ax=None, show=True):
-        if fig is None:
+    def plot(self, fig=None, ax=None, show=True, edges=True):
+        if fig is None and ax is None:
             fig = plt.figure()
-        if ax is None:
             ax = fig.add_subplot(1, 1, 1)
-        else:
+        elif fig is None:
             ax.cla()
+        elif ax is None:
+            raise Exception("Cannot pass figure without axes")
 
         ax.set_aspect('equal')
 
@@ -22,10 +23,13 @@ class BundledGraph:
             n: (d['x'], d['y']) for n, d in self.graph.nodes(data=True)
         }
 
-        for curve in self.curves:
-            ax.plot(curve[0], curve[1])
+        nx.draw_networkx_nodes(self.graph, pos,
+                               ax=ax,
+                               node_size=100)
 
-        nx.draw_networkx_nodes(self.graph, pos, ax=ax)
+        if edges:
+            for curve in self.curves:
+                ax.plot(curve[0], curve[1], 'k-', linewidth=1)
 
         if show:
             plt.show()
