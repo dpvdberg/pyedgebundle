@@ -7,7 +7,7 @@ import easygui
 import matplotlib
 import networkx as nx
 from PySide2 import QtWidgets
-from PySide2.QtCore import QFile, Signal, QObject, Slot
+from PySide2.QtCore import QFile, Signal, QObject, Slot, QCoreApplication, Qt
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import *
 from matplotlib.figure import Figure
@@ -202,6 +202,7 @@ class Form(QMainWindow, ProgressCallback):
 
 
 if __name__ == '__main__':
+    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication()
     form = Form('form.ui')
     sys.exit(app.exec_())

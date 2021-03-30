@@ -1,3 +1,4 @@
+import itertools
 import math
 from concurrent.futures.thread import ThreadPoolExecutor
 from threading import Lock
@@ -78,15 +79,16 @@ class PheromoneField:
 
             self.run = run
             ants = []
-            with ThreadPoolExecutor() as executor:
-                for e in self.g.edges:
-                    # For each edge, create an ant and let it walk until it reaches its goal
-                    ant = self.initializeEdge(e)
-                    ants.append(ant)
-                    executor.submit(self.ant_walk_loop, ant)
+            # with ThreadPoolExecutor() as executor:
+            for e in self.g.edges:
+                # For each edge, create an ant and let it walk until it reaches its goal
+                ant = self.initializeEdge(e)
+                ants.append(ant)
+                self.ant_walk_loop(ant)
+                # executor.submit(self.ant_walk_loop, ant)
 
                 # Wait for ants to finish walking
-                executor.shutdown(wait=True)
+                # executor.shutdown(wait=True)
 
             # print("All ants completed walk")
             # Update the field with the new found paths
@@ -99,11 +101,12 @@ class PheromoneField:
             self.completed_ants = 0
 
             self.diff_matrix = np.zeros(self.field.shape)
-            with ThreadPoolExecutor() as executor:
-                for ant in ants:
-                    executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
+            # with ThreadPoolExecutor() as executor:
+            for ant in ants:
+                self.updateField(ant.path, ant.start_index, ant.end_index)
+                # executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
 
-                executor.shutdown(wait=True)
+                # executor.shutdown(wait=True)
 
             self.field += self.diff_matrix
 
@@ -183,17 +186,18 @@ class PheromoneField:
         distances = path_constant * np.exp(-distances ** 2 / (2 * (self.maxUpdateDistance / 3) ** 2))
 
         # create the difference matrix which will store the matrix added to the pheromone field
-        diff_matrix = np.zeros(self.field.shape[:2])
+        diff_matrix = np.zeros(self.field.shape)
+
+        update_indices_typed = np.zeros((update_indices.shape[0] * 2, update_indices.shape[1] + 1), dtype=int)
+        update_indices = np.repeat(update_indices, 2, axis=0)
+        update_indices_typed[:update_indices.shape[0], :update_indices.shape[1]] = update_indices
+        # Set even types to start type
+        update_indices_typed[::2, -1] = start_index
+        # Set odd types to end type
+        update_indices_typed[1::2, -1] = end_index
 
         # put distance at correct position by raveling the indices
-        flat_index_array = np.ravel_multi_index(update_indices.T, diff_matrix.shape)
-        np.ravel(diff_matrix)[flat_index_array] = distances
-
-        # add type axis
-        diff_matrix = np.repeat(diff_matrix[:, :, np.newaxis], self.numtypes, axis=2)
-
-        # filter unmodified types
-        diff_matrix[:, :, ~np.isin(np.arange(self.numtypes), [start_index, end_index])] = 0
+        diff_matrix[tuple(update_indices_typed.T)] = np.repeat(distances, 2)
 
         self.diff_matrix_lock.acquire()
         self.diff_matrix += diff_matrix
