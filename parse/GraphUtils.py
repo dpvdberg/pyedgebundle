@@ -31,7 +31,7 @@ class GraphUtils:
         return g
 
     @staticmethod
-    def integer_positions(g: nx.Graph) -> nx.Graph:
+    def normalize_positions(g: nx.Graph) -> nx.Graph:
         d = {}
         for node, data in g.nodes(data=True):
             d[node] = {
@@ -39,6 +39,19 @@ class GraphUtils:
                 'y': int(data['y'])
             }
         nx.set_node_attributes(g, d)
+
+        neg_x = any(d['x'] < 0 for _, d in g.nodes(data=True))
+        neg_y = any(d['y'] < 0 for _, d in g.nodes(data=True))
+        if neg_x or neg_y:
+            min_x = abs(min(d['x'] for _, d in g.nodes(data=True)))
+            min_y = abs(min(d['y'] for _, d in g.nodes(data=True)))
+
+            for node, data in g.nodes(data=True):
+                d[node] = {
+                    'x': int(min_x + data['x']),
+                    'y': int(min_y + data['y'])
+                }
+            nx.set_node_attributes(g, d)
         return g
 
     @staticmethod
@@ -48,7 +61,7 @@ class GraphUtils:
 
         properties = GraphUtils.getCommonProperties(g)
         if {'x', 'y'}.issubset(properties):
-            return GraphUtils.integer_positions(g), True
+            return GraphUtils.normalize_positions(g), True
 
         dlg = GraphMLPropertySelector(properties)
         if dlg.exec_() == QDialog.Accepted:
@@ -64,18 +77,7 @@ class GraphUtils:
                 }
             nx.set_node_attributes(g, d)
 
-            neg_x = any(d['x'] < 0 for _, d in g.nodes(data=True))
-            neg_y = any(d['y'] < 0 for _, d in g.nodes(data=True))
-            if neg_x or neg_y:
-                min_x = abs(min(d['x'] for _, d in g.nodes(data=True)))
-                min_y = abs(min(d['y'] for _, d in g.nodes(data=True)))
-
-                for node, data in g.nodes(data=True):
-                    d[node] = {
-                        'x': int(min_x + data['x']),
-                        'y': int(min_y + data['y'])
-                    }
-                nx.set_node_attributes(g, d)
+            g = GraphUtils.normalize_positions(g)
 
             return g, True
         else:
