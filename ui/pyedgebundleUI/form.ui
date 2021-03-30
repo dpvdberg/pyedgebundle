@@ -7,16 +7,84 @@
     <x>0</x>
     <y>0</y>
     <width>693</width>
-    <height>440</height>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="100,1,1">
     <item>
-     <widget class="QWidget" name="mplWidget" native="true"/>
+     <layout class="QVBoxLayout" name="VLayout" stretch="0,0,100">
+      <item>
+       <layout class="QHBoxLayout" name="topBox" stretch="0,0,0,0">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetNoConstraint</enum>
+        </property>
+        <item>
+         <widget class="QPushButton" name="btnSettings">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRun">
+          <property name="text">
+           <string>Run</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblInfo">
+          <property name="text">
+           <string>No graph loaded</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget" native="true"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="bottomBox"/>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

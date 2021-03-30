@@ -6,7 +6,8 @@ import numpy as np
 
 from algorithms.AntBundleAlgorithm import AntBundleAlgorithm
 from data.interpolation.BSplineInterpolate import BSplineInterpolate
-from demo.demo import AirlineDemo
+from demo.demo import AirlineDemo, SmallDemo
+from parse.GraphUtils import GraphUtils
 
 G = nx.DiGraph()
 G.add_nodes_from([
@@ -86,3 +87,10 @@ class TestAntBundleAlgorithm(TestCase):
         a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 10, 2, False, 0.98, 0.4, 0.0005, 5, 6)
         a.bundle().plot()
         a.field.plot()
+
+    def test_small_demo(self):
+        random.seed(1)
+        np.random.seed(1)
+        g = SmallDemo().get_graph()
+        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 50, 4, False, 0.98, 0.4, 0.0005, 5, 6)
+        a.bundle().plot()

@@ -1,6 +1,7 @@
 from unittest import TestCase
 import networkx as nx
-from parser.GraphUtils import GraphUtils
+
+from parse.GraphUtils import GraphUtils
 
 
 class TestgraphUtils(TestCase):

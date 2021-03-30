@@ -94,9 +94,10 @@ class TestPheromoneField(TestCase):
         path.extend([
             (x, 6 - x) for x in range(4, 7)
         ])
-        test.field += test.updateField(path, 0, 0)
+        test.updateField(path, 0, 0)
+        test.field += test.diff_matrix
 
-        test.plot()
+        test.plot(cm='plasma')
 
         self.assertEqual(np.count_nonzero(test.field), 7 * 4 + 1)
 

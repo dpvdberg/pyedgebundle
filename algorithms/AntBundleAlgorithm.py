@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+import pandas as pd
 from networkx import DiGraph
 
 from algorithms.BundleAlgorithm import BundleAlgorithm
@@ -98,7 +99,8 @@ class AntBundleAlgorithm(BundleAlgorithm):
 
             curve_points.append(end_point)
             curve_points = np.array(curve_points)
-            curve_points = np.unique(curve_points, axis=0)
+            _, idx = np.unique(curve_points, axis=0, return_index=True)
+            curve_points = curve_points[np.sort(idx)]
 
             curves.append(curve_points)
 

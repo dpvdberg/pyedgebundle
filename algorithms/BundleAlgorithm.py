@@ -1,6 +1,4 @@
 from data import BundledGraph
-from networkx import Graph
-
 
 # An algorithm that performs edge bundling on a given graph
 from data.interpolation.ParametricInterpolate import ParametricInterpolate

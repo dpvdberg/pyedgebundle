@@ -175,11 +175,11 @@ class PheromoneField:
     # Evaporate field values after a run
     def evaporate(self):
         # Depending on whether the user choose a constant value decrease, or multiplying by a factor between (0, 1)
-        if (self.decreaseByConstant):
+        if self.decreaseByConstant:
             self.field = self.field - self.decreaseValue
             self.field[self.field < 0] = 0
         else:
-            self.field = self.field * self.decreaseValue
+            self.field = self.field * (1 - self.decreaseValue)
 
     # Take random new directional change
     def randomDirectionalChange(self) -> float:

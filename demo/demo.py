@@ -1,8 +1,10 @@
 import os
 import pathlib
-from enum import Enum
+
 import networkx as nx
 from matplotlib import pyplot as plt
+
+from parse.GraphUtils import GraphUtils
 
 
 class EBDemo:
@@ -19,6 +21,15 @@ class EBDemo:
                          self.path()
                          ))
         return self.sanitize(g)
+
+
+class SmallDemo(EBDemo):
+    def path(self):
+        return 'small.graphml'
+
+    def sanitize(self, g: nx.DiGraph) -> nx.DiGraph:
+        g, _ = GraphUtils.sanitize(g)
+        return g
 
 
 class AirlineDemo(EBDemo):

@@ -1,7 +1,4 @@
 import math
-from typing import List
-
-import numpy
 
 
 class Ant:

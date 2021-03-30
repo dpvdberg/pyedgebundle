@@ -1,13 +1,11 @@
+import os
+import pathlib
 from dataclasses import dataclass
 
 from PySide2 import QtWidgets
 from PySide2.QtUiTools import loadUiType
-from PySide2.examples.webchannel.standalone.ui_dialog import Ui_Dialog
-import pathlib
-import os
 
-
-TestQDialog = loadUiType(os.path.join(pathlib.Path(__file__).parent.absolute(), "graphMLPropertySelector.ui"))[0]
+PropertySelectorUI = loadUiType(os.path.join(pathlib.Path(__file__).parent.absolute(), "GraphMLPropertySelector.ui"))[0]
 
 
 @dataclass
@@ -18,7 +16,7 @@ class SelectedProperties:
     useName: bool = True
 
 
-class graphMLPropertySelector(QtWidgets.QDialog, TestQDialog):
+class GraphMLPropertySelector(QtWidgets.QDialog, PropertySelectorUI):
     def __init__(self, properties, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
         self.properties = properties
