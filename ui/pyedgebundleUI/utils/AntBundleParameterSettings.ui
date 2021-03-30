@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Parameter settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../ant.ico</normaloff>../ant.ico</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
