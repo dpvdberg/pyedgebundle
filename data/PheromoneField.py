@@ -79,16 +79,15 @@ class PheromoneField:
 
             self.run = run
             ants = []
-            # with ThreadPoolExecutor() as executor:
-            for e in self.g.edges:
-                # For each edge, create an ant and let it walk until it reaches its goal
-                ant = self.initializeEdge(e)
-                ants.append(ant)
-                self.ant_walk_loop(ant)
-                # executor.submit(self.ant_walk_loop, ant)
+            with ThreadPoolExecutor() as executor:
+                for e in self.g.edges:
+                    # For each edge, create an ant and let it walk until it reaches its goal
+                    ant = self.initializeEdge(e)
+                    ants.append(ant)
+                    executor.submit(self.ant_walk_loop, ant)
 
-                # Wait for ants to finish walking
-                # executor.shutdown(wait=True)
+                    # Wait for ants to finish walking
+                    executor.shutdown(wait=True)
 
             # print("All ants completed walk")
             # Update the field with the new found paths
@@ -101,12 +100,11 @@ class PheromoneField:
             self.completed_ants = 0
 
             self.diff_matrix = np.zeros(self.field.shape)
-            # with ThreadPoolExecutor() as executor:
-            for ant in ants:
-                self.updateField(ant.path, ant.start_index, ant.end_index)
-                # executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
+            with ThreadPoolExecutor() as executor:
+                for ant in ants:
+                    executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
 
-                # executor.shutdown(wait=True)
+                    executor.shutdown(wait=True)
 
             self.field += self.diff_matrix
 

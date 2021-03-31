@@ -9,23 +9,23 @@
     </node>
     <node id="2">
       <data key="x">0</data>
-      <data key="y">25</data>
+      <data key="y">50</data>
     </node>
     <node id="3">
       <data key="x">0</data>
-      <data key="y">50</data>
+      <data key="y">100</data>
     </node>
     <node id="4">
       <data key="x">0</data>
-      <data key="y">75</data>
+      <data key="y">150</data>
     </node>
     <node id="5">
       <data key="x">0</data>
-      <data key="y">100</data>
+      <data key="y">200</data>
     </node>
     <node id="6">
-      <data key="x">200</data>
-      <data key="y">50</data>
+      <data key="x">700</data>
+      <data key="y">100</data>
     </node>
     <edge source="1" target="6" />
     <edge source="2" target="6" />
