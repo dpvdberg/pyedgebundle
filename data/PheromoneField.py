@@ -87,7 +87,7 @@ class PheromoneField:
                     ants.append(ant)
                     executor.submit(self.ant_walk_loop, ant)
 
-                    # Wait for ants to finish walking
+                # Wait for ants to finish walking
                 executor.shutdown(wait=True)
 
             # print("All ants completed walk")
@@ -102,6 +102,7 @@ class PheromoneField:
 
             self.diff_matrix = np.zeros(self.field.shape)
             self.count_matrix = np.zeros(self.field.shape, dtype=int)
+
             with ThreadPoolExecutor() as executor:
                 for ant in ants:
                     executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
@@ -202,7 +203,7 @@ class PheromoneField:
         diff_matrix[tuple(update_indices_typed.T)] = np.repeat(distances, 2)
 
         count_matrix = np.array(diff_matrix, copy=True)
-        count_matrix = count_matrix[count_matrix > 0]
+        count_matrix[count_matrix > 0] = 1
         count_matrix = count_matrix.astype(int)
 
         self.diff_matrix_lock.acquire()
