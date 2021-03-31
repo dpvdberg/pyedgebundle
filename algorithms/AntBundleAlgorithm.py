@@ -82,6 +82,7 @@ class AntBundleAlgorithm(BundleAlgorithm, ProgressCallback):
         for q in range(line_size):
             pheromone = self.field.field[tuple(perpendicular_line[q])][start_index] \
                         + self.field.field[tuple(perpendicular_line[q])][end_index]
+            # pheromone = sum(self.field.field[tuple(perpendicular_line[q])])
             pheromone_exp = pheromone ** 8
             ps += pheromone_exp
 

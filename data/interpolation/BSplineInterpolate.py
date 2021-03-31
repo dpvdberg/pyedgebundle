@@ -1,6 +1,8 @@
 from typing import Tuple
 
 from scipy import interpolate
+from scipy.interpolate import KroghInterpolator
+
 from data.interpolation.ParametricInterpolate import ParametricInterpolate
 import numpy as np
 
@@ -20,4 +22,8 @@ class BSplineInterpolate(ParametricInterpolate):
 
         tck, u = interpolate.splprep([x, y], s=self.smoothing, k=spline_degree)
         out = interpolate.splev(self.parameters, tck)
+        #
+        # u = KroghInterpolator(x, y)
+        # out = [u(i) for i in self.parameters]
+
         return out[0], out[1]

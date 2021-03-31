@@ -3,7 +3,6 @@ import pathlib
 from dataclasses import dataclass
 from typing import Optional
 
-from PyQt5.QtWidgets import QDialog
 from PySide2 import QtWidgets
 from PySide2.QtUiTools import loadUiType
 from PySide2.QtWidgets import QVBoxLayout

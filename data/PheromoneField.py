@@ -34,6 +34,7 @@ class PheromoneField:
 
         self.diff_matrix_lock = Lock()
         self.diff_matrix = np.zeros(self.field.shape)
+        self.count_matrix = np.zeros(self.field.shape, dtype=int)
 
         self.columns, self.rows, self.numtypes = self.field.shape
 
@@ -87,7 +88,7 @@ class PheromoneField:
                     executor.submit(self.ant_walk_loop, ant)
 
                     # Wait for ants to finish walking
-                    executor.shutdown(wait=True)
+                executor.shutdown(wait=True)
 
             # print("All ants completed walk")
             # Update the field with the new found paths
@@ -100,13 +101,16 @@ class PheromoneField:
             self.completed_ants = 0
 
             self.diff_matrix = np.zeros(self.field.shape)
+            self.count_matrix = np.zeros(self.field.shape, dtype=int)
             with ThreadPoolExecutor() as executor:
                 for ant in ants:
                     executor.submit(self.updateField, ant.path, ant.start_index, ant.end_index)
 
-                    executor.shutdown(wait=True)
+                executor.shutdown(wait=True)
 
-            self.field += self.diff_matrix
+            # prevent division by zero
+            self.count_matrix[self.count_matrix == 0] = 1
+            self.field += (self.diff_matrix / self.count_matrix)
 
             # Evaporate value of all fields such that bad paths will eventually disappear
             self.evaporate()
@@ -197,8 +201,13 @@ class PheromoneField:
         # put distance at correct position by raveling the indices
         diff_matrix[tuple(update_indices_typed.T)] = np.repeat(distances, 2)
 
+        count_matrix = np.array(diff_matrix, copy=True)
+        count_matrix = count_matrix[count_matrix > 0]
+        count_matrix = count_matrix.astype(int)
+
         self.diff_matrix_lock.acquire()
         self.diff_matrix += diff_matrix
+        self.count_matrix += count_matrix
         self.diff_matrix_lock.release()
 
         if self.progress_callback:
