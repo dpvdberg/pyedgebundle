@@ -4,44 +4,44 @@
   <key id="x" for="node" attr.name="x" attr.type="double" />
   <graph edgedefault="undirected">
     <node id="0">
-      <data key="x">25.0</data>
+      <data key="x">50.0</data>
       <data key="y">0.0</data>
     </node>
     <node id="1">
-      <data key="x">20.225424859373685</data>
-      <data key="y">14.694631307311829</data>
+      <data key="x">40.45084971874737</data>
+      <data key="y">29.389262614623657</data>
     </node>
     <node id="2">
-      <data key="x">7.725424859373686</data>
-      <data key="y">23.776412907378838</data>
+      <data key="x">15.450849718747373</data>
+      <data key="y">47.552825814757675</data>
     </node>
     <node id="3">
-      <data key="x">-7.725424859373684</data>
-      <data key="y">23.77641290737884</data>
+      <data key="x">-15.450849718747367</data>
+      <data key="y">47.55282581475768</data>
     </node>
     <node id="4">
-      <data key="x">-20.225424859373682</data>
-      <data key="y">14.69463130731183</data>
+      <data key="x">-40.450849718747364</data>
+      <data key="y">29.38926261462366</data>
     </node>
     <node id="5">
-      <data key="x">-25.0</data>
-      <data key="y">3.061616997868383e-15</data>
+      <data key="x">-50.0</data>
+      <data key="y">6.123233995736766e-15</data>
     </node>
     <node id="6">
-      <data key="x">-20.22542485937369</data>
-      <data key="y">-14.694631307311825</data>
+      <data key="x">-40.45084971874738</data>
+      <data key="y">-29.38926261462365</data>
     </node>
     <node id="7">
-      <data key="x">-7.725424859373689</data>
-      <data key="y">-23.776412907378838</data>
+      <data key="x">-15.450849718747378</data>
+      <data key="y">-47.552825814757675</data>
     </node>
     <node id="8">
-      <data key="x">7.725424859373681</data>
-      <data key="y">-23.77641290737884</data>
+      <data key="x">15.450849718747362</data>
+      <data key="y">-47.55282581475768</data>
     </node>
     <node id="9">
-      <data key="x">20.225424859373682</data>
-      <data key="y">-14.694631307311834</data>
+      <data key="x">40.450849718747364</data>
+      <data key="y">-29.389262614623668</data>
     </node>
     <edge source="0" target="1" />
     <edge source="0" target="2" />
