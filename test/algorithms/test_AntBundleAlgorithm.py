@@ -9,7 +9,7 @@ from data.interpolation.BSplineInterpolate import BSplineInterpolate
 from demo.demo import AirlineDemo, SmallDemo
 from parse.GraphUtils import GraphUtils
 
-G = nx.DiGraph()
+G = nx.Graph()
 G.add_nodes_from([
     (1, {"x": 0, "y": 0}),
     (2, {"x": 0, "y": 50}),
@@ -20,6 +20,8 @@ G.add_nodes_from([
 ])
 for i in range(1, 6):
     G.add_edge(i, 6)
+
+nx.readwrite.write_graphml_xml(G, '../../examplegraphs/join.graphml', named_key_ids=True)
 
 G_pres = nx.DiGraph()
 G_pres.add_nodes_from([
@@ -40,7 +42,7 @@ class TestAntBundleAlgorithm(TestCase):
     def test_example(self):
         random.seed(1)
         np.random.seed(10)
-        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 50, 4, True, 0.0001, 0.4, 0.0005, 5, 6)
+        a = AntBundleAlgorithm(G, BSplineInterpolate(max_degree=2), 10, 4, True, 0.0001, 0.4, 0.0005, 5, 6)
         result = a.bundle()
         a.field.plot()
         result.plot()
@@ -80,8 +82,8 @@ class TestAntBundleAlgorithm(TestCase):
         g = AirlineDemo().get_graph()
         d = {}
         for node, data in g.nodes(data=True):
-            d[node] = {'x': int(data["x"]*0.7),
-                       'y': int(data["y"]*0.7)}
+            d[node] = {'x': int(data["x"] * 0.7),
+                       'y': int(data["y"]* 0.7)}
         nx.set_node_attributes(g, d)
 
         a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 100, 4, False, 0.98, 0.4, 0.0005, 5, 6)
@@ -92,5 +94,5 @@ class TestAntBundleAlgorithm(TestCase):
         random.seed(1)
         np.random.seed(1)
         g = SmallDemo().get_graph()
-        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 50, 4, False, 0.98, 0.4, 0.0005, 5, 6)
+        a = AntBundleAlgorithm(g, BSplineInterpolate(max_degree=3), 1, 4, False, 0.98, 0.4, 0.0005, 5, 6)
         a.bundle().plot()

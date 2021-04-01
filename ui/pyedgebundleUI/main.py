@@ -1,3 +1,5 @@
+import os
+import pathlib
 import sys
 from threading import Thread
 from typing import Optional
@@ -23,6 +25,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from ui.pyedgebundleUI.utils.AntBundleOutputWindow import AntBundleOutputWindow
 from ui.pyedgebundleUI.utils.AntBundleParameterSettings import AntBundleParameterSettings, AntBundleParameters
+
 matplotlib.use('Qt5Agg')
 
 
@@ -62,7 +65,7 @@ class Form(QMainWindow, ProgressCallback):
         # Matplotlib widget
         content = self.ui.widget
 
-        self.canvas = FigureCanvas(Figure((6,7)))
+        self.canvas = FigureCanvas(Figure((6, 7)))
         self.figure = self.canvas.figure
         self.ax = self.canvas.figure.subplots()
         self.ax.axes.xaxis.set_visible(False)
@@ -201,8 +204,12 @@ class Form(QMainWindow, ProgressCallback):
         self.info.setText(f"#nodes: {node_count}\tdimensions: ({max_x}, {max_y})")
 
 
-if __name__ == '__main__':
+def start():
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication()
-    form = Form('form.ui')
+    form = Form(os.path.join(pathlib.Path(__file__).parent.absolute(), "form.ui"))
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    start()

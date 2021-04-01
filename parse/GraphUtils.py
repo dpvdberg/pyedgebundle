@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import networkx as nx
 from PySide2.QtWidgets import QDialog
@@ -8,7 +8,7 @@ from ui.pyedgebundleUI.utils.GraphMLPropertySelector import GraphMLPropertySelec
 
 class GraphUtils:
     @staticmethod
-    def getCommonProperties(g: nx.Graph) -> list[str]:
+    def getCommonProperties(g: nx.Graph) -> List[str]:
         properties = None
         for n, data in g.nodes.items():
             if properties is None:

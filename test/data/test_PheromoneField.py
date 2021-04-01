@@ -59,7 +59,8 @@ class TestPheromoneField(TestCase):
         path = [
             (3, x) for x in range(7)
         ]
-        test.field += test.updateField(path, 0, 3)
+        test.updateField(path, 0, 3)
+        test.field += test.diff_matrix
 
         self.assertEqual(np.count_nonzero(test.field), 35 * 2)
         self.assertEqual(list(test.field[3][0]), [1, 0, 0, 1, 0])
@@ -69,7 +70,8 @@ class TestPheromoneField(TestCase):
         path = [
             (x, x) for x in range(7)
         ]
-        test.field += test.updateField(path, 0, 0)
+        test.updateField(path, 0, 0)
+        test.field += test.diff_matrix
 
         test.plot()
 
